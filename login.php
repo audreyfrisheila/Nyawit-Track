@@ -1,15 +1,12 @@
 <?php
     session_start();
+    require "koneksi.php";
 
-    $username = $_POST["username"];
+    $username = $_post["username"];
     $password = $_POST["password"];
 
-    if($username == "jul123" && $password == "123"){
-        $_SESSION["user"] = $username;
-        header("Location: dashboard.php");
-    }else{
-        echo "Username atau password Anda salah!";
-    }
+    $query = mysqli_query($koneksi, "SELECT * FROM users WHERE username='$username' AND password='$password'");
+    
 ?>
 
 
@@ -40,7 +37,7 @@
     </div>
 
 
-    <form action="dashboard.php" method="POST">
+    <form action="login.php" method="POST">
         
         <div class="form-floating mb-3">
             <input type="text" class="form-control" name="username" id="floatingUsername" placeholder="Username" required>
