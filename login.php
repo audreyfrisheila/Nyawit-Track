@@ -2,11 +2,23 @@
     session_start();
     require "koneksi.php";
 
-    $username = $_post["username"];
-    $password = $_POST["password"];
+   if(isset($_POST['login'])){
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
     $query = mysqli_query($koneksi, "SELECT * FROM users WHERE username='$username' AND password='$password'");
-    
+    $cek_jumlah = mysqli_num_rows($query);
+
+    if($cek_jumlah>0){
+        $data = mysqli_fetch_array($query); //data diubah dlm bentuk array
+        $_SESSION['user'] = $data['username'];
+        header("Location: dashboard.php");
+        exit();
+    }else{
+        echo "<script> alert('Username atau Password Tidak Cocok!'); </script>";
+    }
+
+   }
 ?>
 
 
@@ -57,15 +69,13 @@
             <a href="#" class="text-decoration-none small">Need Help?</a>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Login</button>
+        <button type="submit" name="login" class="btn btn-primary w-100 py-2 fw-bold">Login</button>
         
-    </form> <div class="text-center my-3 text-muted small">OR</div>
+    </form> <div class="text-center my-3 text-muted small">Belum Punya Akun?</div>
     <button type="button" class="btn btn-outline-dark w-100 mb-3" >
-        <i class="bi bi-google"></i> Sign In
+        <a href="regist.php">Sign Up</a>
     </button>
     
 </div>
-
-
 </body>
 </html>

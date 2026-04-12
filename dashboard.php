@@ -6,7 +6,7 @@
         exit();
     }
 
-    echo "Welcome " . $_SESSION['user'];
+    echo $_SESSION['user'];
 ?>
 
 <!DOCTYPE html>
@@ -17,6 +17,6 @@
     <title>dashboard</title>
 </head>
 <body>
-    hello
+    
 </body>
 </html>
