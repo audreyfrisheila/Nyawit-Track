@@ -1,3 +1,13 @@
+:root {
+    --primary-green: #2E8B57;   
+    --primary-hover: #1e663e;    
+    --light-green: #eef7f0;     
+    --white: #ffffff;            
+    --secondary-color: #2E8B57;  
+    --hightlight-color: #185231; 
+}
+
+
 body {
   background-color: #f8f9fa;
 }
