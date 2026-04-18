@@ -12,6 +12,7 @@
     if($cek_jumlah>0){
         $data = mysqli_fetch_array($query); //data diubah dlm bentuk array
         $_SESSION['user'] = $data['username'];
+        $_SESSION['userID'] = $data['userID'];
         $_SESSION['status'] = 'login';
         
         echo "<script> alert('Anda Berhasil Login!'); 
