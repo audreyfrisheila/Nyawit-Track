@@ -36,7 +36,7 @@
 
     <link rel="stylesheet" href="style1.css">
    <style>
-    /* Definisikan variabel warna bernuansa hijau dan putih */
+   
 :root {
     --primary-green: #2E8B57;   
     --primary-hover: #1e663e;    
