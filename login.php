@@ -3,7 +3,7 @@
     require "koneksi.php";
 
    if(isset($_POST['login'])){
-    $username = $_POST['username'];
+    $username = strtolower($_POST['username']);
     $password = $_POST['password'];
 
     $query = mysqli_query($koneksi, "SELECT * FROM users WHERE username='$username' AND password='$password'");
@@ -12,8 +12,10 @@
     if($cek_jumlah>0){
         $data = mysqli_fetch_array($query); //data diubah dlm bentuk array
         $_SESSION['user'] = $data['username'];
-        header("Location: dashboard.php");
-        exit();
+        $_SESSION['status'] = 'login';
+        
+        echo "<script> alert('Anda Berhasil Login!'); 
+        location.href='dashboard.php';</script>";
     }else{
         echo "<script> alert('Username atau Password Tidak Cocok!'); </script>";
     }

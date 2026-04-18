@@ -3,7 +3,7 @@
     require "koneksi.php";
 
     if(isset($_POST['register'])){
-        $username = $_POST['username'];
+        $username = strtolower($_POST['username']);
         $password = $_POST['password'];
         $confirm = $_POST['confirm_password'];
 
