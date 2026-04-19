@@ -141,7 +141,7 @@ a.text-decoration-none:hover {
         <h1 style="color: var(--secondary-color);">
             
         </h1>
-        <h2 style="color: var(--hightlight-color); margin-top: 100px;">Login</h2>
+        <h2 style="color: var(--hightlight-color); margin-top: 100px; font-weight: bold;">Login</h2>
         <p class="text-muted">Enter your details to continue</p>
     </div>
 
