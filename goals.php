@@ -1,3 +1,25 @@
+<?php
+session_start();
+require 'koneksi.php';
+
+if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
+    echo "<script> alert('Anda Belum Login, Silakan Login Terlebih Dahulu!'); 
+            location.href = 'login.php';
+        </script>";
+}
+
+if(isset($_POST['submit'])){
+    $nama = $_POST['nama_goal'];
+    $target = $_POST['target_nominal'];
+    $deadline = $_POST['deadline'];
+
+    $query = mysqli_query($koneksi, "INSERT INTO goals (nama_goal, target_nominal, deadline) VALUES ('$nama', '$target', '$deadline')");
+    if($query){
+        echo "<script>alert('Perubahan Berhasil Disimpan!');</script>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -99,7 +121,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <form action="proses_goal.php" method="post">
+                <form action="goals.php" method="post">
                     <div class="modal-body">
 
                         <div class="mb-3">
@@ -113,7 +135,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="deadline">Deadline</label>
-                            <input type="text" id="deadline" name="deadline" class="form-control" required>
+                            <input type="date" id="deadline" name="deadline" class="form-control" required>
                         </div>
                     </div>
 
