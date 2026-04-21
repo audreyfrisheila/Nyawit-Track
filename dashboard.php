@@ -68,7 +68,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             <h4 class="text-success fw-bold"><i class="bi bi-wallet2 me-2"></i>Nyawit Track</h4>
         </div>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li><a href="index.php" class="nav-link active"><i class="bi bi-grid-fill me-3"></i>Dashboard</a></li>
+            <li><a href="dashboard.php" class="nav-link active"><i class="bi bi-grid-fill me-3"></i>Dashboard</a></li>
             <li><a href="transactions.php" class="nav-link"><i class="bi bi-arrow-left-right me-3"></i>Transactions</a>
             </li>
             <li><a href="budgets.php" class="nav-link"><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
