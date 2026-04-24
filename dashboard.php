@@ -7,7 +7,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
         </script>";
 }
 
-?>
+?> 
 
 <!DOCTYPE html>
 <html lang="en">
