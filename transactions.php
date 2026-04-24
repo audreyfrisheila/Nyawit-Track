@@ -75,7 +75,7 @@ $resultKategori = mysqli_query($koneksi, $queryKategori);
         </ul>
     </div>
 
-    <!-- mau dibuat option -->
+    <!-- mau dibuat option
     <div class="main-content flex-grow-1 p-4" style="margin-left: 250px;">
         
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -164,6 +164,6 @@ $resultKategori = mysqli_query($koneksi, $queryKategori);
 
         
         document.addEventListener("DOMContentLoaded", toggleKategori);
-    </script>
+    </script> -->
 </body>
 </html>

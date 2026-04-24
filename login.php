@@ -10,7 +10,7 @@ if (isset($_POST['login'])) {
     $cek_jumlah = mysqli_num_rows($query);
 
     if ($cek_jumlah > 0) {
-        $data = mysqli_fetch_array($query); //data diubah dlm bentuk array
+        $data = mysqli_fetch_array($query); 
         $_SESSION['user'] = $data['username'];
         $_SESSION['userID'] = $data['userID'];
         $_SESSION['status'] = 'login';
