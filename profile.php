@@ -38,7 +38,6 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
-            <li><a href="settings.php" class="nav-link text-dark"><i class="bi bi-gear-fill me-3"></i>Settings</a></li>
             <li><a href="profile.php" class="nav-link active bg-success"><i
                         class="bi bi-person-circle me-3"></i>Profile</a></li>
             <li class="mt-2">
@@ -55,7 +54,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             </div>
 
         </header>
-        <div class="card" style="width: 50rem;">
+        <div class="card d-flex justify-content-between align-items-center mb-4" >
             <div class="card-body">
                 <h5 class="card-title">Profile Information</h5>
                 <form>
@@ -71,7 +70,6 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
                     <div class="mb-3">
                         <label for="exampleInputAddres1" class="form-label">Address</label>
                         <input type="text" class="form-control" id="exampleInputAddres1" >
-                    
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="exampleCheck1">

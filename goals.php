@@ -60,7 +60,6 @@ if(isset($_POST['submit'])){
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
-            <li><a href="settings.php" class="nav-link"><i class="bi bi-gear-fill me-3"></i>Settings</a></li>
             <li><a href="profile.php" class="nav-link"><i class="bi bi-person-circle me-3"></i>Profile</a></li>
             <li class="mt-2">
                 <a href="logout.php" class="text-danger nav-link"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
