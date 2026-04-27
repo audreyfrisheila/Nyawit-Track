@@ -56,7 +56,6 @@ if(isset($_POST['submit'])){
             </li>
             <li><a href="budgets.php" class="nav-link"><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
             <li><a href="goals.php" class="nav-link active"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
-            <li><a href="reports.php" class="nav-link"><i class="bi bi-graph-up-arrow me-3"></i>Reports</a></li>
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
