@@ -107,7 +107,6 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
             <li><a href="transactions.php" class="nav-link active bg-success"><i class="bi bi-arrow-left-right me-3"></i>Transactions</a></li>
             <li><a href="budgets.php" class="nav-link text-dark"><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
             <li><a href="goals.php" class="nav-link text-dark"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
-            <li><a href="reports.php" class="nav-link text-dark"><i class="bi bi-graph-up-arrow me-3"></i>Reports</a></li>
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">

@@ -26,19 +26,18 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             <h4 class="text-success fw-bold"><i class="bi bi-wallet2 me-2"></i>Nyawit Track</h4>
         </div>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li><a href="dashboard.php" class="nav-link text-dark"><i class="bi bi-grid-fill me-3"></i>Dashboard</a>
+            <li><a href="dashboard.php" class="nav-link "><i class="bi bi-grid-fill me-3"></i>Dashboard</a>
             </li>
-            <li><a href="transactions.php" class="nav-link text-dark"><i
+            <li><a href="transactions.php" class="nav-link "><i
                         class="bi bi-arrow-left-right me-3"></i>Transactions</a></li>
-            <li><a href="budgets.php" class="nav-link text-dark"><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a>
+            <li><a href="budgets.php" class="nav-link "><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a>
             </li>
-            <li><a href="goals.php" class="nav-link text-dark"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
-            <li><a href="reports.php" class="nav-link text-dark"><i class="bi bi-graph-up-arrow me-3"></i>Reports</a>
+            <li><a href="goals.php" class="nav-link "><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
             </li>
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
-            <li><a href="profile.php" class="nav-link active bg-success"><i
+            <li><a href="profile.php" class="nav-link active "><i
                         class="bi bi-person-circle me-3"></i>Profile</a></li>
             <li class="mt-2">
                 <a href="logout.php" class="text-danger nav-link"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
