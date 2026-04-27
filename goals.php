@@ -7,7 +7,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             location.href = 'login.php';
         </script>";
 }
-
+// halooo
 if(isset($_POST['submit'])){
     $nama = $_POST['nama_goal'];
     $target = $_POST['target_nominal'];
