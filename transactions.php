@@ -111,6 +111,7 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
+            <li><a href="settings.php" class="nav-link text-dark"><i class="bi bi-gear-fill me-3"></i>Settings</a></li>
             <li><a href="profile.php" class="nav-link text-dark"><i class="bi bi-person-circle me-3"></i>Profile</a></li>
             <li class="mt-2">
                 <a href="logout.php" class="text-danger nav-link"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
@@ -121,16 +122,15 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
     <div class="main-content">
         <header class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold mb-0">Transaction</h2>
-                <p class="text-muted">Set Your Money Transaction Here</p>
+                <h2 class="fw-bold mb-0">Transactions</h2>
+                <p class="text-muted">Track Your Money Transaction</p>
             </div>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#transactionModal"
-                style="background-color: #2E8B57; padding: 4px 12px; border: 0px; border-radius: 4px; color: white;"><b>+
-                    Add
-                    Transactions</b></button>
+            <button class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#tambahModal">
+                <i class="bi bi-plus-lg me-1"></i> Add Transactions
+            </button>
         </header>
 
-       <div class="card border-0 shadow-sm rounded-4">
+        <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
@@ -162,8 +162,19 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                                             <?= $row['jenis'] == 'pemasukan' ? '+' : '-' ?> Rp <?= number_format($row['jumlah'], 0, ',', '.') ?>
                                         </td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></button>
-                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn btn-sm btn-outline-warning" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editModal"
+                                                onclick="setEditData('<?= $row['transactionID'] ?>', '<?= $row['jenis'] ?>', '<?= $row['categoriesID'] ?>', '<?= $row['jumlah'] ?>', '<?= htmlspecialchars($row['keterangan'], ENT_QUOTES) ?>')">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            
+                                            <button type="button" class="btn btn-sm btn-outline-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#hapusModal"
+                                                onclick="setHapusData('<?= $row['transactionID'] ?>')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
@@ -178,49 +189,42 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
             </div>
         </div>
     </div>
-    
-    <!-- form add goal yg ngepop up -->
-    <div class="modal fade" id="transactionModal" tabindex="-1">
+
+    <div class="modal fade" id="tambahModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Transaction</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-content rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Tambah Transaksi Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                <form action="transactions.php" method="POST">
+                <form action="" method="POST">
                     <div class="modal-body">
-
                         <div class="mb-3">
-                            <!-- jenisssssss -->
-                            <label for="nama_transaksi">Transaction</label>
-                            <input type="text" name="nama_transaksi" id="nama_transaksi" class="form-control" required>
-                        </div>
-                        <select class="form-select" id="jenis" name="jenis" required>
+                            <label class="form-label fw-semibold">Jenis Transaksi</label>
+                            <select class="form-select" name="jenis" required>
                                 <option value="pemasukan">Pemasukan</option>
                                 <option value="pengeluaran">Pengeluaran</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="kategori" class="form-label fw-semibold">Kategori</label>
-                            <select class="form-select" id="kategori" name="kategori">
+                            <label class="form-label fw-semibold">Kategori</label>
+                            <select class="form-select" name="kategori">
                                 <option value="">Pilih Kategori...</option>
-                                <?php while($kat = mysqli_fetch_assoc($resultKategori)) : ?>
+                                <?php 
+                                mysqli_data_seek($resultKategori, 0); 
+                                while($kat = mysqli_fetch_assoc($resultKategori)) : 
+                                ?>
                                     <option value="<?= $kat['categoriesID'] ?>"><?= $kat['nama_kategori'] ?></option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="jumlah" class="form-label fw-semibold">Jumlah (Rp)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">Rp</span>
-                                <input type="number" class="form-control" id="jumlah" name="jumlah" min="0" required>
-                            </div>
+                            <label class="form-label fw-semibold">Jumlah (Rp)</label>
+                            <input type="number" class="form-control" name="jumlah" min="0" required>
                         </div>
                         <div class="mb-3">
-                            <label for="keterangan" class="form-label fw-semibold">Keterangan</label>
-                            <textarea class="form-control" id="keterangan" name="keterangan" rows="3" required></textarea>
+                            <label class="form-label fw-semibold">Keterangan</label>
+                            <textarea class="form-control" name="keterangan" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer border-0">
@@ -231,6 +235,88 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Edit Transaksi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_id" name="transactionID">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Jenis Transaksi</label>
+                            <select class="form-select" id="edit_jenis" name="jenis" required>
+                                <option value="pemasukan">Pemasukan</option>
+                                <option value="pengeluaran">Pengeluaran</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Kategori</label>
+                            <select class="form-select" id="edit_kategori" name="kategori">
+                                <option value="">Pilih Kategori...</option>
+                                <?php 
+                                mysqli_data_seek($resultKategori, 0); 
+                                while($kat = mysqli_fetch_assoc($resultKategori)) : 
+                                ?>
+                                    <option value="<?= $kat['categoriesID'] ?>"><?= $kat['nama_kategori'] ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Jumlah (Rp)</label>
+                            <input type="number" class="form-control" id="edit_jumlah" name="jumlah" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Keterangan</label>
+                            <textarea class="form-control" id="edit_keterangan" name="keterangan" rows="3" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" name="update" class="btn btn-warning px-4 text-white">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="hapusModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content rounded-4 text-center p-3">
+                <form action="" method="POST">
+                    <div class="modal-body">
+                        <i class="bi bi-exclamation-circle text-danger" style="font-size: 3rem;"></i>
+                        <h5 class="mt-3 fw-bold">Hapus Data?</h5>
+                        <p class="text-muted mb-0">Data transaksi ini akan dihapus permanen.</p>
+                        <input type="hidden" id="hapus_id" name="transactionID">
+                    </div>
+                    <div class="modal-footer border-0 d-flex justify-content-center">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" name="hapus" class="btn btn-danger px-4">Ya, Hapus</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function setEditData(id, jenis, kategori, jumlah, keterangan) {
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_jenis').value = jenis;
+            document.getElementById('edit_kategori').value = kategori;
+            document.getElementById('edit_jumlah').value = jumlah;
+            document.getElementById('edit_keterangan').value = keterangan;
+        }
+
+        function setHapusData(id) {
+            document.getElementById('hapus_id').value = id;
+        }
+    </script>
 </body>
 </html>
