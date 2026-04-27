@@ -1,6 +1,6 @@
 <?php
 session_start();
-
+// julieeeee
 if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     echo "<script> alert('Anda Belum Login, Silakan Login Terlebih Dahulu!'); 
             location.href = 'login.php';
@@ -55,7 +55,6 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             </div>
 
         </header>
-<!-- ghshsh -->
         <div class="card" style="width: 50rem;">
             <div class="card-body">
                 <h5 class="card-title">Profile Information</h5>
