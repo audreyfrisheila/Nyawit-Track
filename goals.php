@@ -6,18 +6,47 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     echo "<script> alert('Anda Belum Login, Silakan Login Terlebih Dahulu!'); 
             location.href = 'login.php';
         </script>";
+    exit;
 }
-// halooo
+// tambah goal
 if(isset($_POST['submit'])){
     $nama = $_POST['nama_goal'];
     $target = $_POST['target_nominal'];
     $deadline = $_POST['deadline'];
 
-    $query = mysqli_query($koneksi, "INSERT INTO goals (nama_goal, target_nominal, deadline) VALUES ('$nama', '$target', '$deadline')");
+    $query = mysqli_query($koneksi, "INSERT INTO goals (nama_goal, target_nominal, deadline, terkumpul) VALUES ('$nama', '$target', '$deadline', 0)");
     if($query){
         echo "<script>alert('Perubahan Berhasil Disimpan!');</script>";
     }
 }
+
+// tambahh pemasukan 
+if(isset($_POST['topup'])){
+    $id = (int) $_POST['id'];
+    $jumlah = (int) $_POST['jumlah'];
+
+    $queryTopup = mysqli_query($koneksi, "UPDATE goals SET terkumpul = terkumpul+ $jumlah WHERE goalsID=$id");
+}
+
+if(isset($_POST['edit'])){
+    $id = (int) $_POST['goalsID'];
+    $nama = $_POST['nama_goal'];
+    $target = $_POST['target_nominal'];
+    $deadline = $_POST['deadline'];
+
+    $queryEdit = mysqli_query($koneksi, "UPDATE goals set nama_goals = '$nama', $target_nominal = '$target', deadline = '$deadline' where goalsID =' $id'");
+}
+
+// hapus
+if(isset($_POST['hapus'])){
+    $id= (int) $_GET['hapus'];
+    $queryHapus = mysqli_query($koneksi, "DELETE FROM goals WHERE goalsID = $id");
+}
+
+// ambil data
+$dataGoals = mysqli_query($koneksi, "SELECT * from goals order by goalsID desc");
+
+
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +70,23 @@ if(isset($_POST['submit'])){
             --secondary-color: #2E8B57;
             --hightlight-color: #185231;
         }
+        body{
+            background-color: white;
+        }
+        .sidebar{
+            width: 220px;
+            height: 100vh;
+            position: fixed;
+            background-color: white;
+            padding: 20px;
+        }
+        .main{
+            margin-left: 240px;
+            padding: 30px;
+        }
+        .progress{
+            height: 8px;
+        }
     </style>
 </head>
 
@@ -60,7 +106,6 @@ if(isset($_POST['submit'])){
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
-            <li><a href="settings.php" class="nav-link"><i class="bi bi-gear-fill me-3"></i>Settings</a></li>
             <li><a href="profile.php" class="nav-link"><i class="bi bi-person-circle me-3"></i>Profile</a></li>
             <li class="mt-2">
                 <a href="logout.php" class="text-danger nav-link"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
@@ -137,6 +182,7 @@ if(isset($_POST['submit'])){
                             <label for="deadline">Deadline</label>
                             <input type="date" id="deadline" name="deadline" class="form-control" required>
                         </div>
+                        
                     </div>
 
                     <div class="modal-footer">
