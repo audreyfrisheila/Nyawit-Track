@@ -6,7 +6,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             location.href = 'login.php';
         </script>";
 }
-
+// komen
 ?>
 <!DOCTYPE html>
 <html lang="en">
