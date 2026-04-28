@@ -126,15 +126,7 @@ $dataGoals = mysqli_query($koneksi, "SELECT * from goals order by goalsID desc")
         </header>
 
         <div class="row g-4 mb-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm p-3">
-                    <div class="card-body">
-                        <h6 class="text-muted mb-2">Dana Darurat</h6>
-                        <h3 class="fw-bold text-success mb-0">Rp </h3>
-                        <small class="text-success"><i class="bi bi-arrow-up"></i>..% from last month</small>
-                    </div>
-                </div>
-            </div>
+            
             <div class="col-md-4">
                 <div class="card shadow-sm p-3">
                     <div class="card-body">

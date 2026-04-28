@@ -1,13 +1,65 @@
 <?php
 session_start();
+require "koneksi.php";
 
 if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     echo "<script> alert('Anda Belum Login, Silakan Login Terlebih Dahulu!'); 
             location.href = 'login.php';
         </script>";
+    exit;
 }
 
-?> 
+if($_SERVER['REQUEST_METHOD']=='POST'){
+    $aksi = $_POST['aksi'];
+
+    if($aksi = 'tambah'){
+        $nama = $_POST['nama_goal'];
+        $target = $_POST['target_nominal'];
+        $deadline = $_POST['deadline'];
+        if($deadline==""){
+            $deadline_val = "NULL";
+        }else{
+            $deadline_val = "'$deadline'";
+        }
+
+        mysqli_query($koneksi, "INSERT INTO goals(nama_goal, target_goal, deadline, terkumpul) VALUES ('$nama', '$target', '$deadline_val', 0)");
+    }
+
+    if($aksi == 'edit'){
+        $id = $_POST['goalsID'];
+        $nama = $_POST['nama_goal'];
+        $target = $_POST['target_nominal'];
+        $deadline = $_POST['deadline'];
+        if($deadline==""){
+            $deadline_val = "NULL";
+        }else{
+            $deadline_val = "'$deadline'";
+        }
+
+        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target' deadline='$deadline_val' WHERE goalsID = '$id'");
+    }
+
+    if($aksi == 'hapus'){
+        $id = $_POST['goalsID'];
+        mysqli_query($koneksi, "DELETE FROM goals where goalsID = '$id'");
+    }
+
+    if($aksi == 'topup'){
+        $id = $_POST['goalsID'];
+        $jumlah = $_POST['jumlah'];
+        mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + '$jumlah' WHERE goalsID = '$id'");
+
+    }
+
+    header("Location: goalss.php");
+    exit;
+}
+
+// ambil data dari database
+$data = mysqli_query($koneksi, "SELECT * FROM goals");
+
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,13 +67,12 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dashboard</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">       
+    <title>Goals</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <style>
-        body {
+        <style>body {
             background-color: #f8f9fa;
         }
 
@@ -82,70 +133,31 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             </li>
         </ul>
     </div>
+    <!-- end navbar -->
 
     <div class="main-content">
-        <header class="d-flex justify-content-between align-items-center mb-4">
+
+        <!-- header -->
+         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold mb-0">Welcome Back, <?php echo strtoupper($_SESSION['user']); ?>!</h2>
-                <p class="text-muted">What's happening with Your money today?</p>
+                <h2 class="fw-bold mb-0">Goals</h2>
+                <p class="text-muted">Set financial goals and track your progress</p>
             </div>
-            <span class="badge g-light text-dark border p-2 px-3 shadow-sm rounded-pill">
-                <i class="bi bi-calendar3 me-2"></i><?php echo date('d M, Y'); ?>
-            </span>
-        </header>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                <i class="bi bi-plus-lg me-1"></i>Add Goal
+            </button>
+         </div>
 
-        <div class="row g-4 mb-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm p-3">
-                    <div class="card-body">
-                        <h6 class="text-muted mb-2">Total Balance</h6>
-                        <h3 class="fw-bold text-success mb-0">Rp </h3>
-                        <small class="text-success"><i class="bi bi-arrow-up"></i>..% from last month</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm p-3">
-                    <div class="card-body">
-                        <h6 class="text-muted mb-2">Monthly Income</h6>
-                        <h3 class="fw-bold mb-0">Rp </h3>
-                        <small class="text-primary"><i class="bi bi-arrow-up"></i>Target: Rp...</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card shadow-sm p-3">
-                    <div class="card-body">
-                        <h6 class="text-muted mb-2">Monthly Expenses</h6>
-                        <h3 class="fw-bold text-danger mb-0">Rp </h3>
-                        <small class="text-danger"><i class="bi bi-arrow-up"></i>..% higher</small>
-                    </div>
-                </div>
-            </div>
+         <!-- goals cards -->
+        <div class="row g-4">
+            
         </div>
 
-        <div class="row g-4 mb-4">
-            <div class="col-md-7">
-                <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold p-3">Income vs Expenses</h5>
-                    <div class="card-body d-flex justify-content-center align-items-center"
-                        style="height: 250px; background: #fbfbfb; border-radius: 10px;">
-                        <p class="text-muted">Chart Bar akan muncul di sini</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold p-3">Spending Overview</h5>
-                    <div class="card-body d-flex justify-content-center align-items-center"
-                        style="height: 250px; background: #fbfbfb; border-radius: 10px;">
-                        <p class="text-muted">Donut Chart akan muncul di sini</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
     </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
