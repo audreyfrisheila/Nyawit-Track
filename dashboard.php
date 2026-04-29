@@ -70,12 +70,15 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             <li><a href="transactions.php" class="nav-link"><i class="bi bi-arrow-left-right me-3"></i>Transactions</a>
             </li>
             <li><a href="budgets.php" class="nav-link"><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
+<<<<<<< HEAD
             <li><a href="goalss.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
             <li><a href="reports.php" class="nav-link"><i class="bi bi-graph-up-arrow me-3"></i>Reports</a></li>
+=======
+            <li><a href="goals.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
+>>>>>>> 2ea7c57951673873dec0d37599e79a6b4a71e884
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
-            <li><a href="settings.php" class="nav-link"><i class="bi bi-gear-fill me-3"></i>Settings</a></li>
             <li><a href="profile.php" class="nav-link"><i class="bi bi-person-circle me-3"></i>Profile</a></li>
             <li class="mt-2">
                 <a href="logout.php" class="text-danger nav-link"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
