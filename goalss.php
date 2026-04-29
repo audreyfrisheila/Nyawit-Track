@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $deadline_val = "'$deadline'";
         }
 
-        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target', deadline='$deadline_val' WHERE goalsID = '$id'");
+        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target', deadline=$deadline_val WHERE goalsID = '$id'");
     }
 
     if ($aksi == 'hapus') {
@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($aksi == 'topup') {
         $id = $_POST['goalsID'];
         $jumlah = $_POST['jumlah'];
-        mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + '$jumlah' WHERE goalsID = '$id'");
+        mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + $jumlah WHERE goalsID = '$id'");
 
     }
 
@@ -95,7 +95,7 @@ function formatTanggal($tanggal)
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <style>
-        <style>body {
+        body {
             background-color: #f8f9fa;
         }
 
@@ -121,14 +121,92 @@ function formatTanggal($tanggal)
 
         .nav-link.active {
             background-color: #ecfdf5 !important;
-            /* Warna Emerald muda */
             color: #059669 !important;
-            /* Warna Emerald tua */
             font-weight: 600;
         }
 
         .nav-link:hover:not(.active) {
-            background-color: #f1f5f9;
+            /* background-color: #f1f5f9; */
+            color: #059669 !important;
+            transform: translateX(5px);
+        }
+
+
+        .card-goal {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+
+        .card-goal:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-bawah {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            background-color: #10b981;
+        }
+
+        .badge-persen {
+            background-color: #ecfdf5;
+            color: #059669;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .btn-aksi {
+            flex: 1;
+            border: none;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .btn-topup {
+            background-color: #ecfdf5;
+            color: #059669;
+        }
+
+        .btn-topup:hover {
+            background-color: #d1fae5;
+        }
+
+        .btn-edit {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+
+        .btn-edit:hover {
+            background-color: #dbeafe;
+        }
+
+        .btn-hapus {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-hapus:hover {
+            background-color: #fecaca;
+        }
+
+        .kosong {
+            text-align: center;
+            padding: 60px 0;
+            color: #94a3b8;
         }
     </style>
 </head>
@@ -140,16 +218,14 @@ function formatTanggal($tanggal)
             <h4 class="text-success fw-bold"><i class="bi bi-wallet2 me-2"></i>Nyawit Track</h4>
         </div>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li><a href="dashboard.php" class="nav-link active"><i class="bi bi-grid-fill me-3"></i>Dashboard</a></li>
-            <li><a href="transactions.php" class="nav-link"><i class="bi bi-arrow-left-right me-3"></i>Transactions</a>
-            </li>
-            <li><a href="budgets.php" class="nav-link"><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
-            <li><a href="goalss.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
-            <li><a href="reports.php" class="nav-link"><i class="bi bi-graph-up-arrow me-3"></i>Reports</a></li>
+            <li><a href="dashboard.php" class="nav-link"><i class="bi bi-grid-fill me-3"></i>Dashboard</a></li>
+            <li><a href="transactions.php" class="nav-link active bg-success"><i
+                        class="bi bi-arrow-left-right me-3"></i>Transactions</a></li>
+            <li><a href="budgets.php" class="nav-link "><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
+            <li><a href="goals.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
-            <li><a href="settings.php" class="nav-link"><i class="bi bi-gear-fill me-3"></i>Settings</a></li>
             <li><a href="profile.php" class="nav-link"><i class="bi bi-person-circle me-3"></i>Profile</a></li>
             <li class="mt-2">
                 <a href="logout.php" class="text-danger nav-link"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
@@ -157,8 +233,6 @@ function formatTanggal($tanggal)
         </ul>
     </div>
     <!-- end navbar -->
-
-
 
     <div class="main-content">
 
@@ -195,12 +269,8 @@ function formatTanggal($tanggal)
 
                     ?>
 
-                    <div class="col-12 col-sm-6 col-x1-3">
+                    <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card-goal">
-
-                            <!-- icon -->
-
-
 
                             <!-- nama dan target -->
                             <h6 class="fw-bold mb-1"><?= htmlspecialchars($nama) ?></h6>
@@ -213,7 +283,7 @@ function formatTanggal($tanggal)
 
                             <!-- persen + terkumpul -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge-persen"><?= $persen ?></span>
+                                <span class="badge-persen"><?= $persen ?>%</span>
                                 <span class="info-bawah"><?= formatRp($terkumpul) ?></span>
                             </div>
 

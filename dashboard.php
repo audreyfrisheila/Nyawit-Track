@@ -7,7 +7,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
         </script>";
 }
 
-?> 
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +17,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dashboard</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">       
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <style>
@@ -70,12 +70,11 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             <li><a href="transactions.php" class="nav-link"><i class="bi bi-arrow-left-right me-3"></i>Transactions</a>
             </li>
             <li><a href="budgets.php" class="nav-link"><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
-<<<<<<< HEAD
-            <li><a href="goalss.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
-            <li><a href="reports.php" class="nav-link"><i class="bi bi-graph-up-arrow me-3"></i>Reports</a></li>
-=======
-            <li><a href="goals.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
->>>>>>> 2ea7c57951673873dec0d37599e79a6b4a71e884
+            <<<<<<< HEAD <li><a href="goalss.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
+                <li><a href="reports.php" class="nav-link"><i class="bi bi-graph-up-arrow me-3"></i>Reports</a></li>
+                =======
+                <li><a href="goals.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
+                >>>>>>> 2ea7c57951673873dec0d37599e79a6b4a71e884
         </ul>
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
