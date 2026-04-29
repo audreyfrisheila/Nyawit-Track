@@ -149,9 +149,9 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                                         <td><?= date('d M Y', strtotime($row['tanggal'])) ?></td>
                                         <td>
                                             <?php if($row['jenis'] == 'pemasukan') : ?>
-                                                <span class="badge bg-success bg-opacity-10 text-success">Pemasukan</span>
+                                                <span class="badge bg-success bg-opacity-10 text-success">Income</span>
                                             <?php else : ?>
-                                                <span class="badge bg-danger bg-opacity-10 text-danger">Pengeluaran</span>
+                                                <span class="badge bg-danger bg-opacity-10 text-danger">Outcome</span>
                                             <?php endif; ?>
                                         </td>
                                         <td><?= $row['nama_kategori'] ?? '-' ?></td>
