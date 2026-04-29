@@ -9,42 +9,42 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     exit;
 }
 
-if($_SERVER['REQUEST_METHOD']=='POST'){
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $aksi = $_POST['aksi'];
 
-    if($aksi = 'tambah'){
+    if ($aksi == 'tambah') {
         $nama = $_POST['nama_goal'];
         $target = $_POST['target_nominal'];
         $deadline = $_POST['deadline'];
-        if($deadline==""){
+        if ($deadline == "") {
             $deadline_val = "NULL";
-        }else{
+        } else {
             $deadline_val = "'$deadline'";
         }
 
-        mysqli_query($koneksi, "INSERT INTO goals(nama_goal, target_goal, deadline, terkumpul) VALUES ('$nama', '$target', '$deadline_val', 0)");
+        mysqli_query($koneksi, "INSERT INTO goals(nama_goal, target_nominal, deadline, terkumpul) VALUES ('$nama', '$target', $deadline_val, 0)");
     }
 
-    if($aksi == 'edit'){
+    if ($aksi == 'edit') {
         $id = $_POST['goalsID'];
         $nama = $_POST['nama_goal'];
         $target = $_POST['target_nominal'];
         $deadline = $_POST['deadline'];
-        if($deadline==""){
+        if ($deadline == "") {
             $deadline_val = "NULL";
-        }else{
+        } else {
             $deadline_val = "'$deadline'";
         }
 
-        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target' deadline='$deadline_val' WHERE goalsID = '$id'");
+        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target', deadline='$deadline_val' WHERE goalsID = '$id'");
     }
 
-    if($aksi == 'hapus'){
+    if ($aksi == 'hapus') {
         $id = $_POST['goalsID'];
         mysqli_query($koneksi, "DELETE FROM goals where goalsID = '$id'");
     }
 
-    if($aksi == 'topup'){
+    if ($aksi == 'topup') {
         $id = $_POST['goalsID'];
         $jumlah = $_POST['jumlah'];
         mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + '$jumlah' WHERE goalsID = '$id'");
@@ -58,6 +58,29 @@ if($_SERVER['REQUEST_METHOD']=='POST'){
 // ambil data dari database
 $data = mysqli_query($koneksi, "SELECT * FROM goals");
 
+function formatRp($angka)
+{
+    return "Rp " . number_format($angka, 0, ',', '.');
+}
+
+function hitungPersen($terkumpul, $target)
+{
+    if ($target == 0)
+        return 0;
+    return min(100, round(($terkumpul / $target) * 100));
+}
+
+function hitungSisa($terkumpul, $target)
+{
+    return max(0, $target - $terkumpul);
+}
+
+function formatTanggal($tanggal)
+{
+    if ($tanggal == "0000-00-00" || $tanggal == "" || $tanggal == null)
+        return "-";
+    return date("d M Y", strtotime($tanggal));
+}
 
 ?>
 
@@ -135,10 +158,12 @@ $data = mysqli_query($koneksi, "SELECT * FROM goals");
     </div>
     <!-- end navbar -->
 
+
+
     <div class="main-content">
 
         <!-- header -->
-         <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2 class="fw-bold mb-0">Goals</h2>
                 <p class="text-muted">Set financial goals and track your progress</p>
@@ -146,17 +171,234 @@ $data = mysqli_query($koneksi, "SELECT * FROM goals");
             <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTambah">
                 <i class="bi bi-plus-lg me-1"></i>Add Goal
             </button>
-         </div>
-
-         <!-- goals cards -->
-        <div class="row g-4">
-            
         </div>
 
+        <!-- goals cards -->
+        <div class="row g-4">
+            <?php
+            if (mysqli_num_rows($data) > 0):
+                $i = 0;
+
+                while ($dataGoal = mysqli_fetch_assoc($data)):
+                    $id = $dataGoal['goalsID'];
+                    $nama = $dataGoal['nama_goal'];
+                    $target = $dataGoal['target_nominal'];
+                    $terkumpul = $dataGoal['terkumpul'];
+                    $deadline = $dataGoal['deadline'];
+
+                    $persen = hitungPersen($terkumpul, $target);
+                    $sisa = hitungSisa($terkumpul, $target);
+                    $tanggal = formatTanggal($deadline);
+
+                    $deadline_input = ($deadline == "0000-00-00" || !$deadline) ? "" : $deadline;
+                    $i++;
+
+                    ?>
+
+                    <div class="col-12 col-sm-6 col-x1-3">
+                        <div class="card-goal">
+
+                            <!-- icon -->
 
 
+
+                            <!-- nama dan target -->
+                            <h6 class="fw-bold mb-1"><?= htmlspecialchars($nama) ?></h6>
+                            <p class="info-bawah mb-3">Target: <strong><?= formatRp($target) ?></strong></p>
+
+                            <!-- progress bar -->
+                            <div class="progress mb-2">
+                                <div class="progress-bar" style="width: <?= $persen ?>%"></div>
+                            </div>
+
+                            <!-- persen + terkumpul -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge-persen"><?= $persen ?></span>
+                                <span class="info-bawah"><?= formatRp($terkumpul) ?></span>
+                            </div>
+
+                            <!-- tanggal dan sisa -->
+                            <div class="info-bawah mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="bi bi-calendar3 me-1"></i>Target Date</span>
+                                    <span><?= $tanggal ?></span>
+                                </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <span><i class="bi bi-coin me-1"></i>Sisa</span>
+                                    <span><?= formatRp($sisa) ?></span>
+                                </div>
+                            </div>
+
+                            <!-- button -->
+                            <div class="d-flex gap-2">
+                                <button class="btn-aksi btn-topup"
+                                    onclick="bukaTopup('<?= $id ?>', '<?= htmlspecialchars($nama) ?>')">
+                                    <i class="bi bi-plus-circle-fill me-1"></i>Top Up
+                                </button>
+                                <button class="btn-aksi btn-edit"
+                                    onclick="bukaEdit('<?= $id ?>', '<?= htmlspecialchars($nama) ?>', '<?= $target ?>', '<?= $deadline_input ?>')">
+                                    <i class="bi bi-pencil-fill me-1"></i>Edit
+                                </button>
+                                <button class="btn-aksi btn-hapus"
+                                    onclick="bukaHapus('<?= $id ?>', '<?= htmlspecialchars($nama) ?>')">
+                                    <i class="bi bi-trash-fill me-1"></i>Hapus
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                <?php endwhile;
+            else: ?>
+                <div class="col-12 kosong">
+                    <i class="bi bi-trophy" style="font-size: 48px; color: #cbd5e1;"></i>
+                    <p class="mt-3">Belum ada goal. Tambahkan goal pertamamu!</p>
+                </div>
+
+            <?php endif; ?>
+        </div>
     </div>
 
+    <!-- modal tambah -->
+    <div class="modal fade" id="modalTambah" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Tambah Goal Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-0">
+                    <form action="goalss.php" method="POST">
+                        <input type="hidden" name="aksi" value="tambah">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nama Goal</label>
+                            <input type="text" name="nama_goal" class="form-control rounded-3" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Target Nominal (Rp)</label>
+                            <input type="number" name="target_nominal" class="form-control rounded-3"
+                                placeholder="ex: 50000" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Deadline <span
+                                    class="text-muted">(opsional)</span></label>
+                            <input type="date" name="deadline" class="form-control rounded-3">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 rounded-3">Simpan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- modal edit -->
+    <div class="modal fade" id="modalEdit" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Edit Goal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-0">
+                    <form action="goalss.php" method="POST">
+                        <input type="hidden" name="aksi" value="edit">
+                        <input type="hidden" name="goalsID" id="editID">
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nama Goal</label>
+                            <input type="text" name="nama_goal" id="editNama" class="form-control rounded-3" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Target Nominal (Rp)</label>
+                            <input type="number" name="target_nominal" id="editTarget" class="form-control rounded-3"
+                                required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Deadline</label>
+                            <input type="date" name="deadline" id="editDeadline" class="form-control rounded-3">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal top up -->
+    <div class="modal fade" id="modalTopup" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Top Up</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <p class="text-muted">Tambah tabungan untuk: <strong id="topupNama"></strong></p>
+                    <form method="POST" action="goalss.php">
+                        <input type="hidden" name="aksi" value="topup">
+                        <input type="hidden" name="goalsID" id="topupID">
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Jumlah Top Up (Rp)</label>
+                            <input type="number" name="jumlah" class="form-control rounded-3" placeholder="cth: 500000"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 rounded-3">Top Up Sekarang</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal hapus -->
+    <div class="modal fade" id="modalHapus" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Hapus Goal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <p>Yakin mau hapus goal <strong id="hapusNama"></strong>?</p>
+                    <p class="text-danger small">Data tidak bisa dikembalikan.</p>
+                    <form method="POST" action="goalss.php">
+                        <input type="hidden" name="aksi" value="hapus">
+                        <input type="hidden" name="goalsID" id="hapusID">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary rounded-3 w-50"
+                                data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-danger rounded-3 w-50">Ya, Hapus</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- js -->
+    <script>
+        function bukaTopup(id, nama) {
+            document.getElementById('topupID').value = id;
+            document.getElementById('topupNama').innerText = nama;
+            new bootstrap.Modal(document.getElementById('modalTopup')).show();
+        }
+        function bukaEdit(id, nama, target, deadline) {
+            document.getElementById('editID').value = id;
+            document.getElementById('editNama').value = nama;
+            document.getElementById('editTarget').value = target;
+            document.getElementById('editDeadline').value = deadline;
+            new bootstrap.Modal(document.getElementById('modalEdit')).show();
+        }
+        function bukaHapus(id, nama) {
+            document.getElementById('hapusID').value = id;
+            document.getElementById('hapusNama').innerText = nama;
+            new bootstrap.Modal(document.getElementById('modalHapus')).show();
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
