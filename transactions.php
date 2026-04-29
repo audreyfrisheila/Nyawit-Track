@@ -25,9 +25,9 @@ if (isset($_POST['simpan'])) {
     mysqli_stmt_bind_param($stmt, "isiiss", $userID, $jenis, $categoriesID, $jumlah, $keterangan, $tanggal);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Transaksi berhasil dicatat!'); window.location.href='transactions.php';</script>";
+        echo "<script>alert('Transaction succesfully added!'); window.location.href='transactions.php';</script>";
     } else {
-        echo "<script>alert('Gagal menyimpan data!');</script>";
+        echo "<script>alert('Failed to save data!');</script>";
     }
 }
 
@@ -45,9 +45,9 @@ if (isset($_POST['update'])) {
     mysqli_stmt_bind_param($stmt, "siisii", $jenis, $categoriesID, $jumlah, $keterangan, $transactionID, $userID);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Transaksi berhasil diupdate!'); window.location.href='transactions.php';</script>";
+        echo "<script>alert('Transaction succesfully updated!'); window.location.href='transactions.php';</script>";
     } else {
-        echo "<script>alert('Gagal mengupdate data!');</script>";
+        echo "<script>alert('Failed to update data!');</script>";
     }
 }
 
@@ -60,9 +60,9 @@ if (isset($_POST['hapus'])) {
     mysqli_stmt_bind_param($stmt, "ii", $transactionID, $userID);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Transaksi berhasil dihapus!'); window.location.href='transactions.php';</script>";
+        echo "<script>alert('Transaction succesfully deleted!'); window.location.href='transactions.php';</script>";
     } else {
-        echo "<script>alert('Gagal menghapus data!');</script>";
+        echo "<script>alert('Failed to delete data!');</script>";
     }
 }
 
