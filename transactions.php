@@ -7,7 +7,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             alert('Anda Belum Login, Silakan Login Terlebih Dahulu!'); 
             window.location.href = 'login.php';
           </script>";
-    exit; 
+    exit;
 }
 
 $userID = $_SESSION['userID'];
@@ -83,6 +83,7 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -91,31 +92,109 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style1.css">
     <style>
-        body { overflow-x: hidden; }
-        .sidebar { min-height: 100vh; width: 250px; position: fixed; background: white; z-index: 1000; }
-        .main-content { margin-left: 250px; padding: 2rem; width: calc(100% - 250px); }
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            width: 250px;
+            background-color: white;
+            border-right: 1px solid #dee2e6;
+            position: fixed;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+        }
+
+        .nav-link {
+            color: #6c757d !important;
+            border-radius: 10px;
+            margin: 5px 15px;
+            padding: 10px 15px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            border: none !important;
+        }
+
+        .nav-link.active {
+            background-color: #ecfdf5 !important;
+            color: #059669 !important;
+            font-weight: 600;
+        }
+
+        .nav-link:hover:not(.active):not(.text-danger) {
+            background-color: #ecfdf5 !important;
+            color: #059669 !important;
+            transform: none !important;
+        }
+
+        .nav-link.text-danger {
+            color: #dc2626 !important;
+        }
+
+        .nav-link.text-danger:hover {
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+            transform: none !important;
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+        }
     </style>
 </head>
+
 <body class="d-flex bg-light">
-    
+
+    <!-- navbar -->
     <div class="sidebar d-flex flex-column shadow-sm">
         <div class="p-4 mb-2">
             <h4 class="text-success fw-bold"><i class="bi bi-wallet2 me-2"></i>Nyawit Track</h4>
         </div>
+
         <ul class="nav nav-pills flex-column mb-auto">
-            <li><a href="dashboard.php" class="nav-link"><i class="bi bi-grid-fill me-3"></i>Dashboard</a></li>
-            <li><a href="transactions.php" class="nav-link active bg-success"><i class="bi bi-arrow-left-right me-3"></i>Transactions</a></li>
-            <li><a href="budgets.php" class="nav-link "><i class="bi bi-pie-chart-fill me-3"></i>Budgets</a></li>
-            <li><a href="goals.php" class="nav-link"><i class="bi bi-trophy-fill me-3"></i>Goals</a></li>
+            <li>
+                <a href="dashboard.php" class="nav-link">
+                    <i class="bi bi-grid-fill me-3"></i>Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="transactions.php" class="nav-link active">
+                    <i class="bi bi-arrow-left-right me-3"></i>Transactions
+                </a>
+            </li>
+            <li>
+                <a href="budgets.php" class="nav-link">
+                    <i class="bi bi-pie-chart-fill me-3"></i>Budgets
+                </a>
+            </li>
+            <li>
+                <a href="goalss.php" class="nav-link">
+                    <i class="bi bi-trophy-fill me-3"></i>Goals
+                </a>
+            </li>
         </ul>
+
         <hr class="mx-3">
         <ul class="nav nav-pills flex-column mb-4">
-            <li><a href="profile.php" class="nav-link"><i class="bi bi-person-circle me-3"></i>Profile</a></li>
+            <li>
+                <a href="profile.php" class="nav-link">
+                    <i class="bi bi-person-circle me-3"></i>Profile
+                </a>
+            </li>
             <li class="mt-2">
-                <a href="logout.php" class="text-danger nav-link"><i class="bi bi-box-arrow-right me-3"></i>Logout</a>
+                <a href="logout.php" class="nav-link text-danger">
+                    <i class="bi bi-box-arrow-right me-3"></i>Logout
+                </a>
             </li>
         </ul>
     </div>
+    <!-- end navbar -->
 
     <div class="main-content">
         <header class="d-flex justify-content-between align-items-center mb-4">
@@ -143,8 +222,8 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if(mysqli_num_rows($resultTransaksi) > 0) : ?>
-                                <?php while($row = mysqli_fetch_assoc($resultTransaksi)) : ?>
+                            <?php if (mysqli_num_rows($resultTransaksi) > 0): ?>
+                                <?php while ($row = mysqli_fetch_assoc($resultTransaksi)): ?>
                                     <tr>
                                         <td><?= date('d M Y', strtotime($row['tanggal'])) ?></td>
                                         <td>
@@ -156,19 +235,19 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                                         </td>
                                         <td><?= $row['nama_kategori'] ?? '-' ?></td>
                                         <td><?= htmlspecialchars($row['keterangan']) ?></td>
-                                        <td class="fw-bold <?= $row['jenis'] == 'pemasukan' ? 'text-success' : 'text-danger' ?>">
-                                            <?= $row['jenis'] == 'pemasukan' ? '+' : '-' ?> Rp <?= number_format($row['jumlah'], 0, ',', '.') ?>
+                                        <td
+                                            class="fw-bold <?= $row['jenis'] == 'pemasukan' ? 'text-success' : 'text-danger' ?>">
+                                            <?= $row['jenis'] == 'pemasukan' ? '+' : '-' ?> Rp
+                                            <?= number_format($row['jumlah'], 0, ',', '.') ?>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-sm btn-outline-warning" 
-                                                data-bs-toggle="modal" 
+                                            <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
                                                 data-bs-target="#editModal"
                                                 onclick="setEditData('<?= $row['transactionID'] ?>', '<?= $row['jenis'] ?>', '<?= $row['categoriesID'] ?>', '<?= $row['jumlah'] ?>', '<?= htmlspecialchars($row['keterangan'], ENT_QUOTES) ?>')">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            
-                                            <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                data-bs-toggle="modal" 
+
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
                                                 data-bs-target="#hapusModal"
                                                 onclick="setHapusData('<?= $row['transactionID'] ?>')">
                                                 <i class="bi bi-trash"></i>
@@ -176,7 +255,7 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
-                            <?php else : ?>
+                            <?php else: ?>
                                 <tr>
                                     <td colspan="6" class="text-center py-4 text-muted">No Transaction.</td>
                                 </tr>
@@ -244,7 +323,7 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                 <form action="" method="POST">
                     <div class="modal-body">
                         <input type="hidden" id="edit_id" name="transactionID">
-                        
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Transaction Type</label>
                             <select class="form-select" id="edit_jenis" name="jenis" required>
@@ -302,7 +381,7 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         function setEditData(id, jenis, kategori, jumlah, keterangan) {
             document.getElementById('edit_id').value = id;
@@ -317,4 +396,5 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
         }
     </script>
 </body>
+
 </html>
