@@ -25,29 +25,29 @@ if (isset($_POST['simpan'])) {
     mysqli_stmt_bind_param($stmt, "isiiss", $userID, $jenis, $categoriesID, $jumlah, $keterangan, $tanggal);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Transaksi berhasil dicatat!'); window.location.href='transactions.php';</script>";
+        echo "<script>alert('Transaction succesfully added!'); window.location.href='transactions.php';</script>";
     } else {
-        echo "<script>alert('Gagal menyimpan data!');</script>";
+        echo "<script>alert('Failed to save data!');</script>";
     }
 }
 
 //update
 if (isset($_POST['update'])) {
-    $transactionID = $_POST['transactionID']; // Pastikan nama primary key sesuai di DB
+    $transactionID = $_POST['transactionID']; 
     $jenis = $_POST['jenis'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
     $categoriesID = (!empty($_POST['kategori'])) ? $_POST['kategori'] : NULL;
 
-    // Menambahkan $userID di WHERE clause untuk keamanan (agar user hanya bisa edit datanya sendiri)
+    
     $query = "UPDATE transactions SET jenis = ?, categoriesID = ?, jumlah = ?, keterangan = ? WHERE transactionID = ? AND userID = ?";
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "siisii", $jenis, $categoriesID, $jumlah, $keterangan, $transactionID, $userID);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Transaksi berhasil diupdate!'); window.location.href='transactions.php';</script>";
+        echo "<script>alert('Transaction succesfully updated!'); window.location.href='transactions.php';</script>";
     } else {
-        echo "<script>alert('Gagal mengupdate data!');</script>";
+        echo "<script>alert('Failed to update data!');</script>";
     }
 }
 
@@ -60,9 +60,9 @@ if (isset($_POST['hapus'])) {
     mysqli_stmt_bind_param($stmt, "ii", $transactionID, $userID);
 
     if (mysqli_stmt_execute($stmt)) {
-        echo "<script>alert('Transaksi berhasil dihapus!'); window.location.href='transactions.php';</script>";
+        echo "<script>alert('Transaction succesfully deleted!'); window.location.href='transactions.php';</script>";
     } else {
-        echo "<script>alert('Gagal menghapus data!');</script>";
+        echo "<script>alert('Failed to delete data!');</script>";
     }
 }
 
@@ -213,12 +213,12 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
                             <tr>
-                                <th>Tanggal</th>
-                                <th>Jenis</th>
-                                <th>Kategori</th>
-                                <th>Keterangan</th>
-                                <th>Jumlah</th>
-                                <th>Aksi</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Detail</th>
+                                <th>Many</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -227,10 +227,10 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                                     <tr>
                                         <td><?= date('d M Y', strtotime($row['tanggal'])) ?></td>
                                         <td>
-                                            <?php if ($row['jenis'] == 'pemasukan'): ?>
-                                                <span class="badge bg-success bg-opacity-10 text-success">Pemasukan</span>
-                                            <?php else: ?>
-                                                <span class="badge bg-danger bg-opacity-10 text-danger">Pengeluaran</span>
+                                            <?php if($row['jenis'] == 'pemasukan') : ?>
+                                                <span class="badge bg-success bg-opacity-10 text-success">Income</span>
+                                            <?php else : ?>
+                                                <span class="badge bg-danger bg-opacity-10 text-danger">Outcome</span>
                                             <?php endif; ?>
                                         </td>
                                         <td><?= $row['nama_kategori'] ?? '-' ?></td>
@@ -257,7 +257,7 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">Belum ada data transaksi.</td>
+                                    <td colspan="6" class="text-center py-4 text-muted">No Transaction.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -271,42 +271,42 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
         <div class="modal-dialog">
             <div class="modal-content rounded-4">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold">Tambah Transaksi Baru</h5>
+                    <h5 class="modal-title fw-bold">Add Transaction</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="" method="POST">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Jenis Transaksi</label>
+                            <label class="form-label fw-semibold">Transaction Type</label>
                             <select class="form-select" name="jenis" required>
-                                <option value="pemasukan">Pemasukan</option>
-                                <option value="pengeluaran">Pengeluaran</option>
+                                <option value="pemasukan">Income</option>
+                                <option value="pengeluaran">Outcome</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Kategori</label>
+                            <label class="form-label fw-semibold">Category</label>
                             <select class="form-select" name="kategori">
-                                <option value="">Pilih Kategori...</option>
-                                <?php
-                                mysqli_data_seek($resultKategori, 0);
-                                while ($kat = mysqli_fetch_assoc($resultKategori)):
-                                    ?>
+                                <option value="">Choose Category...</option>
+                                <?php 
+                                mysqli_data_seek($resultKategori, 0); 
+                                while($kat = mysqli_fetch_assoc($resultKategori)) : 
+                                ?>
                                     <option value="<?= $kat['categoriesID'] ?>"><?= $kat['nama_kategori'] ?></option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Jumlah (Rp)</label>
+                            <label class="form-label fw-semibold">Many (Rp)</label>
                             <input type="number" class="form-control" name="jumlah" min="0" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Keterangan</label>
+                            <label class="form-label fw-semibold">Detail</label>
                             <textarea class="form-control" name="keterangan" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" name="simpan" class="btn btn-success px-4">Simpan</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" name="simpan" class="btn btn-success px-4">Save</button>
                     </div>
                 </form>
             </div>
@@ -317,7 +317,7 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
         <div class="modal-dialog">
             <div class="modal-content rounded-4">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold">Edit Transaksi</h5>
+                    <h5 class="modal-title fw-bold">Edit Transaction</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="" method="POST">
@@ -325,36 +325,35 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                         <input type="hidden" id="edit_id" name="transactionID">
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Jenis Transaksi</label>
+                            <label class="form-label fw-semibold">Transaction Type</label>
                             <select class="form-select" id="edit_jenis" name="jenis" required>
-                                <option value="pemasukan">Pemasukan</option>
-                                <option value="pengeluaran">Pengeluaran</option>
+                                <option value="pemasukan">Income</option>
+                                <option value="pengeluaran">Outcome</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Kategori</label>
+                            <label class="form-label fw-semibold">Category</label>
                             <select class="form-select" id="edit_kategori" name="kategori">
-                                <option value="">Pilih Kategori...</option>
-                                <?php
-                                mysqli_data_seek($resultKategori, 0);
-                                while ($kat = mysqli_fetch_assoc($resultKategori)):
-                                    ?>
+                                <option value="">Choose Category...</option>
+                                <?php 
+                                mysqli_data_seek($resultKategori, 0); 
+                                while($kat = mysqli_fetch_assoc($resultKategori)) : 
+                                ?>
                                     <option value="<?= $kat['categoriesID'] ?>"><?= $kat['nama_kategori'] ?></option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Jumlah (Rp)</label>
+                            <label class="form-label fw-semibold">Many (Rp)</label>
                             <input type="number" class="form-control" id="edit_jumlah" name="jumlah" min="0" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Keterangan</label>
-                            <textarea class="form-control" id="edit_keterangan" name="keterangan" rows="3"
-                                required></textarea>
+                            <label class="form-label fw-semibold">Information Detail</label>
+                            <textarea class="form-control" id="edit_keterangan" name="keterangan" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" name="update" class="btn btn-warning px-4 text-white">Update</button>
                     </div>
                 </form>
@@ -368,13 +367,13 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                 <form action="" method="POST">
                     <div class="modal-body">
                         <i class="bi bi-exclamation-circle text-danger" style="font-size: 3rem;"></i>
-                        <h5 class="mt-3 fw-bold">Hapus Data?</h5>
-                        <p class="text-muted mb-0">Data transaksi ini akan dihapus permanen.</p>
+                        <h5 class="mt-3 fw-bold">Delete Data?</h5>
+                        <p class="text-muted mb-0">This data will be permanently deleted.</p>
                         <input type="hidden" id="hapus_id" name="transactionID">
                     </div>
                     <div class="modal-footer border-0 d-flex justify-content-center">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" name="hapus" class="btn btn-danger px-4">Ya, Hapus</button>
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" name="hapus" class="btn btn-danger px-4">Yes, Delete</button>
                     </div>
                 </form>
             </div>
