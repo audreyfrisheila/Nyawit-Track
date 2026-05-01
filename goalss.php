@@ -3,11 +3,11 @@ session_start();
 require "koneksi.php";
 
 if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
-    echo "<script> alert('Anda Belum Login, Silakan Login Terlebih Dahulu!'); 
+    echo "<script> alert('Please log in first!'); 
             location.href = 'login.php';
         </script>";
-    exit;
 }
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $aksi = $_POST['aksi'];
@@ -335,7 +335,7 @@ function formatTanggal($tanggal)
                                     <span><?= $tanggal ?></span>
                                 </div>
                                 <div class="d-flex justify-content-between mt-1">
-                                    <span><i class="bi bi-coin me-1"></i>Sisa</span>
+                                    <span><i class="bi bi-coin me-1"></i>Remainder</span>
                                     <span><?= formatRp($sisa) ?></span>
                                 </div>
                             </div>
@@ -352,7 +352,7 @@ function formatTanggal($tanggal)
                                 </button>
                                 <button class="btn-aksi btn-hapus"
                                     onclick="bukaHapus('<?= $id ?>', '<?= htmlspecialchars($nama) ?>')">
-                                    <i class="bi bi-trash-fill me-1"></i>Hapus
+                                    <i class="bi bi-trash-fill me-1"></i>Delete
                                 </button>
                             </div>
 
@@ -363,7 +363,7 @@ function formatTanggal($tanggal)
             else: ?>
                 <div class="col-12 kosong">
                     <i class="bi bi-trophy" style="font-size: 48px; color: #cbd5e1;"></i>
-                    <p class="mt-3">Belum ada goal. Tambahkan goal pertamamu!</p>
+                    <p class="mt-3">No goals yet. Add your first goal!</p>
                 </div>
 
             <?php endif; ?>
@@ -375,7 +375,7 @@ function formatTanggal($tanggal)
         <div class="modal-dialog">
             <div class="modal-content border-0 rounded-4">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold">Tambah Goal Baru</h5>
+                    <h5 class="modal-title fw-bold">Add New Goal</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
@@ -383,22 +383,22 @@ function formatTanggal($tanggal)
                     <form action="goalss.php" method="POST">
                         <input type="hidden" name="aksi" value="tambah">
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Nama Goal</label>
+                            <label class="form-label fw-semibold">Goal Name</label>
                             <input type="text" name="nama_goal" class="form-control rounded-3" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Target Nominal (Rp)</label>
+                            <label class="form-label fw-semibold">Target (Rp)</label>
                             <input type="number" name="target_nominal" class="form-control rounded-3"
                                 placeholder="ex: 50000" required>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold">Deadline <span
-                                    class="text-muted">(opsional)</span></label>
+                                    class="text-muted">(optional)</span></label>
                             <input type="date" name="deadline" class="form-control rounded-3">
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100 rounded-3">Simpan</button>
+                        <button type="submit" class="btn btn-success w-100 rounded-3">Save</button>
                     </form>
                 </div>
             </div>
@@ -421,11 +421,11 @@ function formatTanggal($tanggal)
                         <input type="hidden" name="goalsID" id="editID">
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Nama Goal</label>
+                            <label class="form-label fw-semibold">Goal Name</label>
                             <input type="text" name="nama_goal" id="editNama" class="form-control rounded-3" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Target Nominal (Rp)</label>
+                            <label class="form-label fw-semibold">Target (Rp)</label>
                             <input type="number" name="target_nominal" id="editTarget" class="form-control rounded-3"
                                 required>
                         </div>
@@ -433,7 +433,7 @@ function formatTanggal($tanggal)
                             <label class="form-label fw-semibold">Deadline</label>
                             <input type="date" name="deadline" id="editDeadline" class="form-control rounded-3">
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 rounded-3">Simpan Perubahan</button>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Save Changes</button>
                     </form>
                 </div>
             </div>
@@ -449,16 +449,16 @@ function formatTanggal($tanggal)
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-0">
-                    <p class="text-muted">Tambah tabungan untuk: <strong id="topupNama"></strong></p>
+                    <p class="text-muted">Add savings for: <strong id="topupNama"></strong></p>
                     <form method="POST" action="goalss.php">
                         <input type="hidden" name="aksi" value="topup">
                         <input type="hidden" name="goalsID" id="topupID">
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Jumlah Top Up (Rp)</label>
+                            <label class="form-label fw-semibold">Top Up Amount (Rp)</label>
                             <input type="number" name="jumlah" class="form-control rounded-3" placeholder="cth: 500000"
                                 required>
                         </div>
-                        <button type="submit" class="btn btn-success w-100 rounded-3">Top Up Sekarang</button>
+                        <button type="submit" class="btn btn-success w-100 rounded-3">Top Up Now</button>
                     </form>
                 </div>
             </div>
@@ -470,19 +470,19 @@ function formatTanggal($tanggal)
         <div class="modal-dialog">
             <div class="modal-content border-0 rounded-4">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold">Hapus Goal</h5>
+                    <h5 class="modal-title fw-bold">Delete Goal</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body pt-0">
-                    <p>Yakin mau hapus goal <strong id="hapusNama"></strong>?</p>
-                    <p class="text-danger small">Data tidak bisa dikembalikan.</p>
+                    <p>Delete <strong id="hapusNama"></strong>?</p>
+                    <p class="text-danger small">Data cannot be restored.</p>
                     <form method="POST" action="goalss.php">
                         <input type="hidden" name="aksi" value="hapus">
                         <input type="hidden" name="goalsID" id="hapusID">
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-secondary rounded-3 w-50"
-                                data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-danger rounded-3 w-50">Ya, Hapus</button>
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger rounded-3 w-50">Delete</button>
                         </div>
                     </form>
                 </div>
