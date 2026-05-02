@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
-    echo "<script> alert('Anda Belum Login, Silakan Login Terlebih Dahulu!'); 
+    echo "<script> alert('Please log in first!'); 
             location.href = 'login.php';
         </script>";
 }

@@ -8,7 +8,7 @@ if (isset($_POST['register'])) {
     $confirm = $_POST['confirm_password'];
 
     if ($password !== $confirm) {
-        echo "<script>alert('Konfirmasi Kata Sandi Tidak Cocok!'); </script>";
+        echo "<script>alert('Passwords Don't Match!'); </script>";
     } else {
         // cek apakah username udh ada di database. 
         // kl cek_jumlah lebih dari 0, brti username udh ada di database
@@ -16,17 +16,17 @@ if (isset($_POST['register'])) {
         $cek_jumlah = mysqli_num_rows($cek_user);
 
         if ($cek_jumlah > 0) {
-            echo "<script> alert ('Username Sudah Terdaftar'); </script>";
+            echo "<script> alert ('Username Already Registered'); </script>";
         } else {
             //kalau aman, username masuk ke database. pake insert into
             $insert = mysqli_query($koneksi, "INSERT INTO users (username, password) VALUES('$username', '$password')");
 
             if ($insert) {
-                echo "<script> alert('Sign Up berhasil! Kembali ke Halaman Login'); 
+                echo "<script> alert('Sign Up Successful! Return to Login Page'); 
                         location.href='login.php';
                         </script>";
             } else {
-                echo "<script> alert('Sign Up Gagal, Sialkan Coba Lagi'); </script>";
+                echo "<script> alert('Sign Up Failed, Please Try Again'); </script>";
             }
         }
     }
@@ -56,7 +56,8 @@ if (isset($_POST['register'])) {
 
 
         body {
-            background-color: var(--light-green);
+            background: url('gree.webp')no-repeat center center fixed;
+            background-size: cover;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
@@ -139,8 +140,8 @@ if (isset($_POST['register'])) {
 
 <body>
     <div class="form-container">
-
-        <h2 style="color: var(--hightlight-color); margin-top: 100px; font-weight: bold;">Registrasi</h2>
+        <h2 style="color: var(--hightlight-color); margin-top: 100px; font-weight: bold;"><i class="bi bi-wallet2 me-2"></i>Nyawit Track</h2>
+        <h2 style="color: var(--hightlight-color); margin-top: 100px; font-weight: bold;">Registration</h2>
 
         <form action="regist.php" method="POST">
 
@@ -156,14 +157,14 @@ if (isset($_POST['register'])) {
             <div class="form-floating mb-3">
                 <input type="password" class="form-control" name="confirm_password" id="confirm_password"
                     placeholder="Konfirmasi password" required>
-                <label for="confirm_password">Konfirmasi Password</label>
+                <label for="confirm_password">Confirm Your Password</label>
             </div>
 
-            <button type="submit" name="register" class="btn btn-primary w-100 py-2 fw-bold">Daftar Sekarang</button>
+            <button type="submit" name="register" class="btn btn-primary w-100 py-2 fw-bold">Create Account</button>
         </form>
-        <div class="text-center my-3 text-muted small">Sudah Punya Akun?</div>
+        <div class="text-center my-3 text-muted small">Already Have an Account?</div>
         <button type="button" class="btn btn-outline-dark w-100 mb-3">
-            <a href="login.php">Login di sini</a>
+            <a href="login.php">Log in Here</a>
         </button>
     </div>
 </body>

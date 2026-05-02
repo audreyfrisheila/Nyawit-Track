@@ -15,10 +15,10 @@ if (isset($_POST['login'])) {
         $_SESSION['userID'] = $data['userID'];
         $_SESSION['status'] = 'login';
 
-        echo "<script> alert('Anda Berhasil Login!'); 
+        echo "<script> alert('You have successfully logged in!'); 
         location.href='dashboard.php';</script>";
     } else {
-        echo "<script> alert('Username atau Password Tidak Cocok!'); </script>";
+        echo "<script> alert('Username or Password Do Not Match!'); </script>";
     }
 
 }
@@ -49,7 +49,8 @@ if (isset($_POST['login'])) {
 
 
         body {
-            background-color: var(--light-green);
+            background: url('gree.webp')no-repeat center center fixed;
+            background-size: cover;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
@@ -137,7 +138,8 @@ if (isset($_POST['login'])) {
             <h1 style="color: var(--secondary-color);">
 
             </h1>
-            <h2 style="color: var(--hightlight-color); margin-top: 100px; font-weight: bold;">Login</h2>
+            <h2 style="color: var(--hightlight-color); margin-top: 100px; font-weight: bold;"><i class="bi bi-wallet2 me-2"></i>Nyawit Track</h2>
+            <h2 style="color: var(--hightlight-color); margin-top: 100px; font-weight: bold;">Log in</h2>
             <p class="text-muted">Enter your details to continue</p>
         </div>
 
@@ -163,10 +165,10 @@ if (isset($_POST['login'])) {
                 <a href="#" class="text-decoration-none small">Need Help?</a>
             </div>
 
-            <button type="submit" name="login" class="btn btn-primary w-100 py-2 fw-bold">Login</button>
+            <button type="submit" name="login" class="btn btn-success w-100 py-2 fw-bold">Login</button>
 
         </form>
-        <div class="text-center my-3 text-muted small">Belum Punya Akun?</div>
+        <div class="text-center my-3 text-muted small">Don't have an account yet?</div>
         <button type="button" class="btn btn-outline-dark w-100 mb-3">
             <a href="regist.php">Sign Up</a>
         </button>
