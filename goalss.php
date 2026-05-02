@@ -53,6 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
 
+        $goal = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT target_nominal, terkumpul from goals where goalsID = '$id'"));
+        $sisa = $goal['target_nominal']-$goal['terkumpul'];
+
         // ketika topup melebihi sisa
         if($jumlah>$sisa){
             header("Location: goalss.php?error=melebihi");
