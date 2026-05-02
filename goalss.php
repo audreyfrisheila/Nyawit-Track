@@ -47,6 +47,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($aksi == 'topup') {
         $id = $_POST['goalsID'];
         $jumlah = $_POST['jumlah'];
+
+        if($jumlah<=0){
+            header("Location: goalss.php");
+            exit;
+        }
+
+        // ketika topup melebihi sisa
+        if($jumlah>$sisa){
+            header("Location: goalss.php?error=melebihi");
+            exit;
+        }
         mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + $jumlah WHERE goalsID = '$id'");
 
     }
@@ -230,6 +241,7 @@ function formatTanggal($tanggal)
 </head>
 
 <body class="d-flex bg-light">
+
     <!-- navbar -->
     <div class="sidebar d-flex flex-column shadow-sm">
         <div class="p-4 mb-2">
@@ -277,6 +289,14 @@ function formatTanggal($tanggal)
 
     <div class="main-content">
 
+        <?php if (isset($_GET['error']) && $_GET['error'] == 'melebihi'): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Jumlah top up melebihi sisa target!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+        
         <!-- header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -342,7 +362,8 @@ function formatTanggal($tanggal)
 
                             <!-- button -->
                             <div class="d-flex gap-2">
-                                <button class="btn-aksi btn-topup"
+                                <button class="btn-aksi btn-topup <?= $persen >= 100 ? 'disabled' : ''?>"
+                                <?= $persen >= 100 ? 'disabled' : ''?>
                                     onclick="bukaTopup('<?= $id ?>', '<?= htmlspecialchars($nama) ?>')">
                                     <i class="bi bi-plus-circle-fill me-1"></i>Top Up
                                 </button>
