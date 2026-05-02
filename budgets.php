@@ -1,21 +1,10 @@
-<?php
-session_start();
-
-if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
-    echo "<script> alert('Please log in first!'); 
-            location.href = 'login.php';
-        </script>";
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dashboard</title>
+    <title>Budgets</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -124,64 +113,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     </div>
     <!-- end navbar -->
 
-    <div class="main-content">
-        <header class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h2 class="fw-bold mb-0">Welcome Back, <?php echo strtoupper($_SESSION['user']); ?>!</h2>
-                <p class="text-muted">What's happening with Your money today?</p>
-            </div>
-            <span class="badge g-light text-dark border p-2 px-3 shadow-sm rounded-pill">
-                <i class="bi bi-calendar3 me-2"></i><?php echo date('d M, Y'); ?>
-            </span>
-        </header>
-
-        <div class="row g-4 mb-4">
-            <div class="col-md-4">
-                <div class="card shadow-sm p-3">
-                    <div class="card-body">
-                        <h6 class="text-muted mb-2">Total Balance</h6>
-                        <h3 class="fw-bold text-success mb-0">Rp </h3>
-                        <small class="text-success"><i class="bi bi-arrow-up"></i>..% from last month</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm p-3">
-                    <div class="card-body">
-                        <h6 class="text-muted mb-2">Monthly Expenses</h6>
-                        <h3 class="fw-bold text-danger mb-0">Rp </h3>
-                        <small class="text-danger"><i class="bi bi-arrow-up"></i>..% higher</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-4 mb-4">
-            <div class="col-md-7">
-                <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold p-3">Income vs Expenses</h5>
-                    <div class="card-body d-flex justify-content-center align-items-center"
-                        style="height: 250px; background: #fbfbfb; border-radius: 10px;">
-                        <p class="text-muted">Chart Bar akan muncul di sini</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold p-3">Spending Overview</h5>
-                    <div class="card-body d-flex justify-content-center align-items-center"
-                        style="height: 250px; background: #fbfbfb; border-radius: 10px;">
-                        <p class="text-muted">Donut Chart akan muncul di sini</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+    <!-- waitt -->
 </body>
 
 </html>
