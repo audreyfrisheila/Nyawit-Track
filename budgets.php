@@ -192,7 +192,78 @@ function getProgressColor($persen)
     </div>
     <!-- end navbar -->
 
-    
+    <div class="main-content">
+        <?php if (isset($_GET['error'] && $_GET['error'] == 'duplikat')): ?>
+            <div class="alert alert-danger alert-dismissible fade show">
+                This category has already been set for this month!
+                <button type="button" class="btn-close" data-bs-dismiss='alert'></button>
+            </div>
+        <?php endif; ?>
+
+        <!-- header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0">Budgets</h2>
+                <p class="text-muted">Plan and manage your monthly budgets</p>
+            </div>
+
+            <div class="d-flex gap-2 align-items-center">
+                <input type="month" class="form-control rounded-3" id="bulanFilter" value="<?= $bulan_filter ?>"
+                    onchange="window.location='budgets.php?bulan='+this.value">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                    <i class="bi bi-plus-lg me-1"></i>Add Budget
+                </button>
+            </div>
+        </div>
+        <!-- end header -->
+
+        <!-- table -->
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-0">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4 py-3">Category</th>
+                            <th>Budget Limit</th>
+                            <th>Spent</th>
+                            <th>Remaining</th>
+                            <th>Progress</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <?php if(mysqli_num_rows($data)>0): 
+                            while($row = mysqli_fetch_assoc($data)):
+                                $spent = $row['spent'];
+                                $limit = $row['budget_limit'];
+                                $remaining = max(0, $limit-$spent);
+                                $persen = $limit > 0 ? min(100, round(($spent/$limit)*100)) : 0;
+                                $progressColor = getProgressColor($persen);
+                                [$icon, $iconColor, $bgColor] = getIcon($row['nama_kategori'], $icon_map);
+                                $bulan_input = date('Y-m', strtotime($row['bulan']));
+                        ?>
+
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="icon-wrap me-1">
+                                        <div class="icon-circle <?= $bgColor ?>"></div>
+                                        <i class="bi <?= $icon ?> <?= $iconColor ?>" style="z-index:1; position:relative;"></i>
+                                    </div>
+                                    <?= htmlspecialchars($row['nama_kategori']) ?>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
