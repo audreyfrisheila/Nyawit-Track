@@ -6,6 +6,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     echo "<script> alert('Please log in first!'); 
             location.href = 'login.php';
         </script>";
+    exit;
 }
 
 
