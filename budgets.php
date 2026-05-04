@@ -23,26 +23,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $budgetID = $_POST['budgetID'];
         $budget_limit = $_POST['budget_limit'];
         $bulan = $_POST['bulan'];
-        $categoriesID = $_POST['catgoriesID'];
-        mysqli_query($koneksi, "UPDATE budgets SET budget_limit = '$budget_Limit', $bulan = '$bulan', catgeoriesID='$categoriesID' where budgetID = '$budgetID'");
+        $categoriesID = $_POST['categoriesID'];
+        mysqli_query($koneksi, "UPDATE budgets SET budget_limit = '$budget_limit', bulan = '$bulan', categoriesID='$categoriesID' where budgetID = '$budgetID'");
     }
 
-    if (+($aksi == 'hapus')) {
+    if ($aksi == 'hapus') {
         $budgetID = $_POST['budgetID'];
-        mysqli_query($koneksi, "DLEETE FROM budgets WHERE budgetID='$budgetID'");
+        mysqli_query($koneksi, "DELETE FROM budgets WHERE budgetID='$budgetID'");
     }
-
     header("Location: budgets.php");
     exit;
 }
 
-$bulan_filter = isset($_GET['bulan'] ? $_GET['bulan'] : date('Y-m'));
+$bulan_filter = isset($_GET['bulan']) ? $_GET['bulan'] : date('Y-m');
 $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk melengkapi template sql 
 
 // nampilin daftar budget per kategori di bulan tertentu dan menghitung brp uang yg udh kepake
 // jadi, haislnya nanti akan kategori: makan, budget_limit: 150.000, spent: 100rb
 $data = mysqli_query($koneksi, "SELECT b.budgetID, c.nama_kategori, c.categoriesID, 
-b.budget_limit, b.bulan, COALESCE((SELECT SUM(t.jumlah) FROM transaction t WHERE t.categoriesID = b.categoriesID 
+b.budget_limit, b.bulan, COALESCE((SELECT SUM(t.jumlah) FROM transactions t WHERE t.categoriesID = b.categoriesID 
 AND DATE_FORMAT(t.tanggal, '%Y-%m') = '$bulan_filter' AND t.jenis = 'expense'), 0) AS spent FROM budgets b JOIN categories c on 
 b.categoriesID = c.categoriesID where DATE_FORMAT(b.bulan, '%Y-%m')='$bulan_filter' ORDER BY b.budgetID ASC");
 
@@ -193,7 +192,7 @@ function getProgressColor($persen)
     <!-- end navbar -->
 
     <div class="main-content">
-        <?php if (isset($_GET['error'] && $_GET['error'] == 'duplikat')): ?>
+        <?php if (isset($_GET['error']) && $_GET['error'] == 'duplikat'): ?>
             <div class="alert alert-danger alert-dismissible fade show">
                 This category has already been set for this month!
                 <button type="button" class="btn-close" data-bs-dismiss='alert'></button>
@@ -233,35 +232,174 @@ function getProgressColor($persen)
                     </thead>
 
                     <tbody>
-                        <?php if(mysqli_num_rows($data)>0): 
-                            while($row = mysqli_fetch_assoc($data)):
+                        <?php if (mysqli_num_rows($data) > 0):
+                            while ($row = mysqli_fetch_assoc($data)):
                                 $spent = $row['spent'];
                                 $limit = $row['budget_limit'];
-                                $remaining = max(0, $limit-$spent);
-                                $persen = $limit > 0 ? min(100, round(($spent/$limit)*100)) : 0;
+                                $remaining = max(0, $limit - $spent);
+                                $persen = $limit > 0 ? min(100, round(($spent / $limit) * 100)) : 0;
                                 $progressColor = getProgressColor($persen);
                                 [$icon, $iconColor, $bgColor] = getIcon($row['nama_kategori'], $icon_map);
                                 $bulan_input = date('Y-m', strtotime($row['bulan']));
-                        ?>
+                                ?>
 
-                        <tr>
-                            <td class="ps-4">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="icon-wrap me-1">
-                                        <div class="icon-circle <?= $bgColor ?>"></div>
-                                        <i class="bi <?= $icon ?> <?= $iconColor ?>" style="z-index:1; position:relative;"></i>
-                                    </div>
-                                    <?= htmlspecialchars($row['nama_kategori']) ?>
-                                </div>
-                            </td>
-                        </tr>
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="icon-wrap me-1">
+                                                <div class="icon-circle <?= $bgColor ?>"></div>
+                                                <i class="bi <?= $icon ?> <?= $iconColor ?>"
+                                                    style="z-index:1; position:relative;"></i>
+                                            </div>
+                                            <?= htmlspecialchars($row['nama_kategori']) ?>
+                                        </div>
+                                    </td>
+                                    <td><?= formatRp($limit) ?></td>
+                                    <td><?= formatRp($spent) ?></td>
+                                    <td><?= formatRp($remaining) ?></td>
+                                    <td style="width: 180px;">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="progress flex-grow-1">
+                                                <div class="progress-bar <?= $progressColor ?>" style="width: <?= $persen ?>%">
+                                                </div>
+                                            </div>
+                                            <small><?= $persen ?>%</small>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-light me-1"
+                                            onclick="bukaEdit('<?= $row['budgetID'] ?>', '<?= $limit ?>', '<?= $bulan_input ?>')">
+                                            <i class="bi bi-pencil text-primary"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-light"
+                                            onclick="bukaHapus('<?= $row['budgetID'] ?>', '<?= htmlspecialchars($row['nama_kategori']) ?>')">
+                                            <i class="bi bi-trash text-danger"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endwhile;
+                        else: ?>
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-pie-chart" style="font-size:40px; color:#cbd5e1;"></i>
+                                    <p class="mt-3">No budgets yet for this month.</p>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    <!-- modal tambah -->
+    <div class="modal fade" id="modalTambah" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-tittle fw-bold">Add New Budget</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body pt-0">
+                    <form action="budgets.php" method="post">
+                        <input type="hidden" name="aksi" value="tambah">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Category</label>
+                            <select name="categoriesID" class="form-select rounded-3" required>
+                                <option value="">--- Select Category ---</option>
+                                <?php
+                                mysqli_data_seek($categories, 0);
+                                while ($cat = mysqli_fetch_assoc($categories)): ?>
+                                    <option value="<?= $cat['categoriesID'] ?>">
+                                        <?= htmlspecialchars($cat['nama_kategori']) ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Budget Limit (Rp)</label>
+                            <input type="number" name="budget_limit" class="form-control rounded-3"
+                                placeholder="ex: 3000000" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Month</label>
+                            <input type="month" name="bulan" class="form-control rounded-3" value="<?= $bulan_filter ?>"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 rounded-3">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal edit -->
+    <div class="modal fade" id="modalEdit" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Edit Budget</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <form action="budgets.php" method="POST">
+                        <input type="hidden" name="aksi" value="edit">
+                        <input type="hidden" name="budgetID" id="editID">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Budget Limit (Rp)</label>
+                            <input type="number" name="budget_limit" id="editLimit" class="form-control rounded-3"
+                                required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Month</label>
+                            <input type="month" name="bulan" id="editBulan" class="form-control rounded-3" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-3">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal hapus -->
+    <div class="modal fade" id="modalHapus" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Delete Budget</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body pt-0">
+                    <p>Delete budget for <strong id="hapusNama"></strong>?</p>
+                    <p class="text-danger small">Data cannot be restored.</p>
+                    <form method="POST" action="budgets.php">
+                        <input type="hidden" name="aksi" value="hapus">
+                        <input type="hidden" name="budgetID" id="hapusID">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-secondary rounded-3 w-50"
+                                data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger rounded-3 w-50">Delete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function bukaEdit(id, limit, bulan) {
+            document.getElementById('editID').value = id;
+            document.getElementById('editLimit').value = limit;
+            document.getElementById('editBulan').value = bulan;
+            new bootstrap.Modal(document.getElementById('modalEdit')).show();
+        }
+        function bukaHapus(id, nama) {
+            document.getElementById('hapusID').value = id;
+            document.getElementById('hapusNama').innerText = nama;
+            new bootstrap.Modal(document.getElementById('modalHapus')).show();
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
 </body>
