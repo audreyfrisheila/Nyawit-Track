@@ -103,6 +103,13 @@ function getProgressColor($persen)
             margin-left: 250px;
             padding: 30px;
             width: calc(100% - 250px);
+            overflow-x: auto;
+        }
+
+        .table th,
+        .table td {
+            white-space: nowrap;
+            font-size: 13px;
         }
 
         .nav-link {
@@ -146,12 +153,21 @@ function getProgressColor($persen)
             background-color: #ecfdf5 !important;
             color: #059669 !important;
         }
-        .nav-link.text-danger { color: #dc2626 !important; }
+
+        .nav-link.text-danger {
+            color: #dc2626 !important;
+        }
+
         .nav-link.text-danger:hover {
             background-color: #fef2f2 !important;
             color: #b91c1c !important;
         }
-        .progress { height: 8px; border-radius: 10px; }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+        }
+
         .icon-circle {
             width: 36px;
             height: 36px;
@@ -162,6 +178,7 @@ function getProgressColor($persen)
             opacity: 0.15;
             position: absolute;
         }
+
         .icon-wrap {
             position: relative;
             width: 36px;
@@ -247,75 +264,79 @@ function getProgressColor($persen)
         <!-- table -->
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-0">
-                <table class="table align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4 py-3">Category</th>
-                            <th>Budget Limit</th>
-                            <th>Spent</th>
-                            <th>Remaining</th>
-                            <th>Progress</th>
-                            <th class="text-end pe-4">Actions</th>
-                        </tr>
-                    </thead>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4 py-3">Category</th>
+                                <th>Budget Limit</th>
+                                <th>Spent</th>
+                                <th>Remaining</th>
+                                <th>Progress</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        <?php if (mysqli_num_rows($data) > 0):
-                            while ($row = mysqli_fetch_assoc($data)):
-                                $spent = $row['spent'];
-                                $limit = $row['budget_limit'];
-                                $remaining = max(0, $limit - $spent);
-                                $persen = $limit > 0 ? min(100, round(($spent / $limit) * 100)) : 0;
-                                $progressColor = getProgressColor($persen);
-                                [$icon, $iconColor, $bgColor] = getIcon($row['nama_kategori'], $icon_map);
-                                $bulan_input = date('Y-m', strtotime($row['bulan']));
-                                ?>
+                        <tbody>
+                            <?php if (mysqli_num_rows($data) > 0):
+                                while ($row = mysqli_fetch_assoc($data)):
+                                    $spent = $row['spent'];
+                                    $limit = $row['budget_limit'];
+                                    $remaining = max(0, $limit - $spent);
+                                    $persen = $limit > 0 ? min(100, round(($spent / $limit) * 100)) : 0;
+                                    $progressColor = getProgressColor($persen);
+                                    [$icon, $iconColor, $bgColor] = getIcon($row['nama_kategori'], $icon_map);
+                                    $bulan_input = date('Y-m', strtotime($row['bulan']));
+                                    ?>
 
-                                <tr>
-                                    <td class="ps-4">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="icon-wrap me-1">
-                                                <div class="icon-circle <?= $bgColor ?>"></div>
-                                                <i class="bi <?= $icon ?> <?= $iconColor ?>"
-                                                    style="z-index:1; position:relative;"></i>
-                                            </div>
-                                            <?= htmlspecialchars($row['nama_kategori']) ?>
-                                        </div>
-                                    </td>
-                                    <td><?= formatRp($limit) ?></td>
-                                    <td><?= formatRp($spent) ?></td>
-                                    <td><?= formatRp($remaining) ?></td>
-                                    <td style="width: 180px;">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <div class="progress flex-grow-1">
-                                                <div class="progress-bar <?= $progressColor ?>" style="width: <?= $persen ?>%">
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="icon-wrap me-1">
+                                                    <div class="icon-circle <?= $bgColor ?>"></div>
+                                                    <i class="bi <?= $icon ?> <?= $iconColor ?>"
+                                                        style="z-index:1; position:relative;"></i>
                                                 </div>
+                                                <?= htmlspecialchars($row['nama_kategori']) ?>
                                             </div>
-                                            <small><?= $persen ?>%</small>
-                                        </div>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-light me-1"
-                                            onclick="bukaEdit('<?= $row['budgetID'] ?>', '<?= $limit ?>', '<?= $bulan_input ?>')">
-                                            <i class="bi bi-pencil text-primary"></i>
-                                        </button>
-                                        <button class="btn btn-sm btn-light"
-                                            onclick="bukaHapus('<?= $row['budgetID'] ?>', '<?= htmlspecialchars($row['nama_kategori']) ?>')">
-                                            <i class="bi bi-trash text-danger"></i>
-                                        </button>
+                                        </td>
+                                        <td><?= formatRp($limit) ?></td>
+                                        <td><?= formatRp($spent) ?></td>
+                                        <td><?= formatRp($remaining) ?></td>
+                                        <td style="width: 180px;">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1">
+                                                    <div class="progress-bar <?= $progressColor ?>"
+                                                        style="width: <?= $persen ?>%">
+                                                    </div>
+                                                </div>
+                                                <small><?= $persen ?>%</small>
+                                            </div>
+                                        </td>
+                                        <td class="text-end pe-4">
+                                            <button class="btn btn-sm btn-light me-1"
+                                                onclick="bukaEdit('<?= $row['budgetID'] ?>', '<?= $limit ?>', '<?= $bulan_input ?>')">
+                                                <i class="bi bi-pencil text-primary"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-light"
+                                                onclick="bukaHapus('<?= $row['budgetID'] ?>', '<?= htmlspecialchars($row['nama_kategori']) ?>')">
+                                                <i class="bi bi-trash text-danger"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endwhile;
+                            else: ?>
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <i class="bi bi-pie-chart" style="font-size:40px; color:#cbd5e1;"></i>
+                                        <p class="mt-3">No budgets yet for this month.</p>
                                     </td>
                                 </tr>
-                            <?php endwhile;
-                        else: ?>
-                            <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
-                                    <i class="bi bi-pie-chart" style="font-size:40px; color:#cbd5e1;"></i>
-                                    <p class="mt-3">No budgets yet for this month.</p>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+
+                </div>
             </div>
         </div>
     </div>
@@ -340,7 +361,8 @@ function getProgressColor($persen)
                                 mysqli_data_seek($categories, 0);
                                 while ($cat = mysqli_fetch_assoc($categories)): ?>
                                     <option value="<?= $cat['categoriesID'] ?>">
-                                        <?= htmlspecialchars($cat['nama_kategori']) ?></option>
+                                        <?= htmlspecialchars($cat['nama_kategori']) ?>
+                                    </option>
                                 <?php endwhile; ?>
                             </select>
                         </div>
