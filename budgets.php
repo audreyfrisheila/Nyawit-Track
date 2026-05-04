@@ -15,16 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($aksi == 'tambah') {
         $categoriesID = $_POST['categoriesID'];
         $budget_limit = $_POST['budget_limit'];
-        $bulan = $_POST['bulan'];
+        $bulan = $_POST['bulan'] . '-01';
         mysqli_query($koneksi, "INSERT INTO budgets(categoriesID, budget_limit, bulan) VALUES ('$categoriesID', '$budget_limit', '$bulan')");
     }
 
     if ($aksi == 'edit') {
         $budgetID = $_POST['budgetID'];
         $budget_limit = $_POST['budget_limit'];
-        $bulan = $_POST['bulan'];
-        $categoriesID = $_POST['categoriesID'];
-        mysqli_query($koneksi, "UPDATE budgets SET budget_limit = '$budget_limit', bulan = '$bulan', categoriesID='$categoriesID' where budgetID = '$budgetID'");
+        $bulan = $_POST['bulan'] . '-01';
+        mysqli_query($koneksi, "UPDATE budgets SET budget_limit = '$budget_limit', bulan = '$bulan' where budgetID = '$budgetID'");
     }
 
     if ($aksi == 'hapus') {
@@ -42,7 +41,7 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
 // jadi, haislnya nanti akan kategori: makan, budget_limit: 150.000, spent: 100rb
 $data = mysqli_query($koneksi, "SELECT b.budgetID, c.nama_kategori, c.categoriesID, 
 b.budget_limit, b.bulan, COALESCE((SELECT SUM(t.jumlah) FROM transactions t WHERE t.categoriesID = b.categoriesID 
-AND DATE_FORMAT(t.tanggal, '%Y-%m') = '$bulan_filter' AND t.jenis = 'expense'), 0) AS spent FROM budgets b JOIN categories c on 
+AND DATE_FORMAT(t.tanggal, '%Y-%m') = '$bulan_filter' AND t.jenis = 'pengeluaran'), 0) AS spent FROM budgets b JOIN categories c on 
 b.categoriesID = c.categoriesID where DATE_FORMAT(b.bulan, '%Y-%m')='$bulan_filter' ORDER BY b.budgetID ASC");
 
 $categories = mysqli_query($koneksi, "SELECT * FROM categories ORDER BY nama_kategori ASC");
@@ -142,10 +141,39 @@ function getProgressColor($persen)
         .nav-link i {
             font-size: 1.1rem;
         }
+
+        .nav-link:hover:not(.active):not(.text-danger) {
+            background-color: #ecfdf5 !important;
+            color: #059669 !important;
+        }
+        .nav-link.text-danger { color: #dc2626 !important; }
+        .nav-link.text-danger:hover {
+            background-color: #fef2f2 !important;
+            color: #b91c1c !important;
+        }
+        .progress { height: 8px; border-radius: 10px; }
+        .icon-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.15;
+            position: absolute;
+        }
+        .icon-wrap {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 
-<body>
+<body class="d-flex bg-light">
     <!-- navbar -->
     <div class="sidebar d-flex flex-column shadow-sm">
         <div class="p-4 mb-2">
@@ -154,7 +182,7 @@ function getProgressColor($persen)
 
         <ul class="nav nav-pills flex-column mb-auto">
             <li>
-                <a href="dashboard.php" class="nav-link active">
+                <a href="dashboard.php" class="nav-link">
                     <i class="bi bi-grid-fill me-3"></i>Dashboard
                 </a>
             </li>
@@ -164,7 +192,7 @@ function getProgressColor($persen)
                 </a>
             </li>
             <li>
-                <a href="budgets.php" class="nav-link">
+                <a href="budgets.php" class="nav-link active">
                     <i class="bi bi-pie-chart-fill me-3"></i>Budgets
                 </a>
             </li>
@@ -354,7 +382,7 @@ function getProgressColor($persen)
                             <label class="form-label fw-semibold">Month</label>
                             <input type="month" name="bulan" id="editBulan" class="form-control rounded-3" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 rounded-3">Save Changes</button>
+                        <button type="submit" class="btn btn-success w-100 rounded-3">Save Changes</button>
                     </form>
                 </div>
             </div>
