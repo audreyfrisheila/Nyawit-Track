@@ -33,13 +33,13 @@ if (isset($_POST['simpan'])) {
 
 //update
 if (isset($_POST['update'])) {
-    $transactionID = $_POST['transactionID']; 
+    $transactionID = $_POST['transactionID'];
     $jenis = $_POST['jenis'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
     $categoriesID = (!empty($_POST['kategori'])) ? $_POST['kategori'] : NULL;
 
-    
+
     $query = "UPDATE transactions SET jenis = ?, categoriesID = ?, jumlah = ?, keterangan = ? WHERE transactionID = ? AND userID = ?";
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "siisii", $jenis, $categoriesID, $jumlah, $keterangan, $transactionID, $userID);
@@ -56,6 +56,7 @@ if (isset($_POST['hapus'])) {
     $transactionID = $_POST['transactionID'];
 
     $query = "DELETE FROM transactions WHERE transactionID = ? AND userID = ?";
+    //prepare statementnyah
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "ii", $transactionID, $userID);
 
@@ -75,10 +76,18 @@ $queryTransaksi = "SELECT t.*, c.nama_kategori
                    LEFT JOIN categories c ON t.categoriesID = c.categoriesID 
                    WHERE t.userID = ? 
                    ORDER BY t.tanggal DESC";
+//prepare statement mysqli
 $stmtTransaksi = mysqli_prepare($koneksi, $queryTransaksi);
 mysqli_stmt_bind_param($stmtTransaksi, "i", $userID);
 mysqli_stmt_execute($stmtTransaksi);
 $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
+
+
+$bulan_filter = isset($_GET['bulan']) ? $_GET['bulan'] : date('Y-m');
+$bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk melengkapi template sql 
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -202,9 +211,15 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                 <h2 class="fw-bold mb-0">Transactions</h2>
                 <p class="text-muted">Track Your Money Transaction</p>
             </div>
-            <button class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#tambahModal">
-                <i class="bi bi-plus-lg me-1"></i> Add Transactions
-            </button>
+            <!-- MONTH -->
+            <div class="d-flex gap-2 align-items-center">
+                <input type="month" class="form-control rounded-3" id="bulanFilter" value="<?= $bulan_filter ?>"
+                    onchange="window.location='transactions.php?bulan='+this.value">
+                <button class="btn btn-success shadow-sm" data-bs-toggle="modal" data-bs-target="#tambahModal">
+                    <i class="bi bi-plus-lg me-1"></i> Add Transactions
+                </button>
+            </div>
+
         </header>
 
         <div class="card border-0 shadow-sm rounded-4">
@@ -227,9 +242,9 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                                     <tr>
                                         <td><?= date('d M Y', strtotime($row['tanggal'])) ?></td>
                                         <td>
-                                            <?php if($row['jenis'] == 'pemasukan') : ?>
+                                            <?php if ($row['jenis'] == 'pemasukan'): ?>
                                                 <span class="badge bg-success bg-opacity-10 text-success">Income</span>
-                                            <?php else : ?>
+                                            <?php else: ?>
                                                 <span class="badge bg-danger bg-opacity-10 text-danger">Outcome</span>
                                             <?php endif; ?>
                                         </td>
@@ -287,10 +302,10 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                             <label class="form-label fw-semibold">Category</label>
                             <select class="form-select" name="kategori">
                                 <option value="">Choose Category...</option>
-                                <?php 
-                                mysqli_data_seek($resultKategori, 0); 
-                                while($kat = mysqli_fetch_assoc($resultKategori)) : 
-                                ?>
+                                <?php
+                                mysqli_data_seek($resultKategori, 0);
+                                while ($kat = mysqli_fetch_assoc($resultKategori)):
+                                    ?>
                                     <option value="<?= $kat['categoriesID'] ?>"><?= $kat['nama_kategori'] ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -335,10 +350,10 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                             <label class="form-label fw-semibold">Category</label>
                             <select class="form-select" id="edit_kategori" name="kategori">
                                 <option value="">Choose Category...</option>
-                                <?php 
-                                mysqli_data_seek($resultKategori, 0); 
-                                while($kat = mysqli_fetch_assoc($resultKategori)) : 
-                                ?>
+                                <?php
+                                mysqli_data_seek($resultKategori, 0);
+                                while ($kat = mysqli_fetch_assoc($resultKategori)):
+                                    ?>
                                     <option value="<?= $kat['categoriesID'] ?>"><?= $kat['nama_kategori'] ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -349,7 +364,8 @@ $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Information Detail</label>
-                            <textarea class="form-control" id="edit_keterangan" name="keterangan" rows="3" required></textarea>
+                            <textarea class="form-control" id="edit_keterangan" name="keterangan" rows="3"
+                                required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer border-0">

@@ -8,6 +8,16 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
 }
 // komen
 //INSERT BELOM
+if(isset($_POST['simpan'])){
+    $nama_user =$_POST['nama'];
+    $email_user=$_POST['emails'];
+    $query = "INSERT INTO users(nama, email) VALUES (?, ?) ";
+    $stmt = mysqli_prepare($koneksi, $query);
+    mysqli_stmt_bind_param($stmt, "jul", $nama_user, $email_user);
+    
+    
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -137,23 +147,19 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
                 <form action="" method="POST">
                     <div class="mb-3">
                         <label for="exampleInputName1" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="exampleInputName1">
+                        <input type="text" name="nama" class="form-control" id="exampleInputName1">
                     </div>
                     <div class="mb-3">
                         <label for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input type="email" name="emails" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                         <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputAddres1" class="form-label">Address</label>
-                        <input type="text" class="form-control" id="exampleInputAddres1">
                     </div>
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="exampleCheck1">
                         <label class="form-check-label" for="exampleCheck1">I have read and agree to the Privacy
                             Policy</label>
                     </div>
-                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="submit" name="simpan" class="btn btn-success">Save</button>
                 </form>
 
             </div>
