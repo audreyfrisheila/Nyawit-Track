@@ -1,5 +1,6 @@
 <?php
 session_start();
+require "koneksi.php";
 
 if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     echo "<script> alert('Please log in first!'); 
@@ -7,6 +8,11 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
         </script>";
 }
 
+$sisaSaldo = mysqli_query($koneksi, "SELECT SUM(CASE WHEN jenis='pemasukan' THEN jumlah ELSE 0 END)- SUM(CASE WHEN jenis='pengeluaran' THEN jumlah ELSE 0 END) as balance FROM transactions WHERE userID = {$_SESSION['userID']}");
+$dataSaldo = mysqli_fetch_assoc($sisaSaldo)['balance'] ?? 0;
+
+$sisaSaldo2 = mysqli_query($koneksi, "SELECT SUM(jumlah) AS monthly FROM transactions WHERE jenis='pengeluaran' AND MONTH(tanggal) = MONTH(NOW()) AND YEAR(tanggal) = YEAR(NOW()) AND userID = {$_SESSION['userID']}");
+$monthly = mysqli_fetch_assoc($sisaSaldo2)['monthly'] ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -140,8 +146,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
                 <div class="card shadow-sm p-3">
                     <div class="card-body">
                         <h6 class="text-muted mb-2">Total Balance</h6>
-                        <h3 class="fw-bold text-success mb-0">Rp </h3>
-                        <small class="text-success"><i class="bi bi-arrow-up"></i>..% from last month</small>
+                        <h3 class="fw-bold text-success mb-0">Rp <?= number_format($dataSaldo, 0, ',', '.') ?></h3>
                     </div>
                 </div>
             </div>
@@ -149,9 +154,8 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
             <div class="col-md-4">
                 <div class="card shadow-sm p-3">
                     <div class="card-body">
-                        <h6 class="text-muted mb-2">Monthly Expenses</h6>
-                        <h3 class="fw-bold text-danger mb-0">Rp </h3>
-                        <small class="text-danger"><i class="bi bi-arrow-up"></i>..% higher</small>
+                        <h6 class="text-muted mb-2">Expenses</h6>
+                        <h3 class="fw-bold text-danger mb-0">Rp <?= number_format($monthly, 0, ',', '.') ?></h3>
                     </div>
                 </div>
             </div>
