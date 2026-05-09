@@ -160,7 +160,7 @@ if (isset($_POST['register'])) {
                 <label for="confirm_password">Confirm Your Password</label>
             </div>
 
-            <button type="submit" name="register" class="btn btn-primary w-100 py-2 fw-bold">Create Account</button>
+            <button type="submit" name="register" class="btn btn-success w-100 py-2 fw-bold">Create Account</button>
         </form>
         <div class="text-center my-3 text-muted small">Already Have an Account?</div>
         <button type="button" class="btn btn-outline-dark w-100 mb-3">

@@ -7,6 +7,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
         </script>";
 }
 // komen
+//INSERT BELOM
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -133,7 +134,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
         <div class="card d-flex justify-content-between align-items-center mb-4">
             <div class="card-body">
                 <h5 class="card-title">Profile Information</h5>
-                <form>
+                <form action="" method="POST">
                     <div class="mb-3">
                         <label for="exampleInputName1" class="form-label">Full Name</label>
                         <input type="text" class="form-control" id="exampleInputName1">
