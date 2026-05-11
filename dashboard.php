@@ -13,6 +13,11 @@ $dataSaldo = mysqli_fetch_assoc($sisaSaldo)['balance'] ?? 0;
 
 $sisaSaldo2 = mysqli_query($koneksi, "SELECT SUM(jumlah) AS monthly FROM transactions WHERE jenis='pengeluaran' AND MONTH(tanggal) = MONTH(NOW()) AND YEAR(tanggal) = YEAR(NOW()) AND userID = {$_SESSION['userID']}");
 $monthly = mysqli_fetch_assoc($sisaSaldo2)['monthly'] ?? 0;
+
+
+// ambil data dari transactions
+$qryTrans = mysqli_query($koneksi, "SELECT * FROM transactions where userID = {$_SESSION['userID']} order by tanggal DESC limit 10");
+
 ?>
 
 <!DOCTYPE html>
@@ -162,24 +167,47 @@ $monthly = mysqli_fetch_assoc($sisaSaldo2)['monthly'] ?? 0;
         </div>
 
         <div class="row g-4 mb-4">
-            <div class="col-md-7">
-                <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold p-3">Income vs Expenses</h5>
-                    <div class="card-body d-flex justify-content-center align-items-center"
-                        style="height: 250px; background: #fbfbfb; border-radius: 10px;">
-                        <p class="text-muted">Chart Bar akan muncul di sini</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-5">
-                <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold p-3">Spending Overview</h5>
-                    <div class="card-body d-flex justify-content-center align-items-center"
-                        style="height: 250px; background: #fbfbfb; border-radius: 10px;">
-                        <p class="text-muted">Donut Chart akan muncul di sini</p>
-                    </div>
-                </div>
-            </div>
+            <h5>Recent Activities</h5>
+            <!-- mau tampilin aktivitas terbaru, stepnya: 
+             1. ambil data dari table transactions
+             2. tampilin di dashboard pake while
+             3. bandingkan tgl di db sm tgl skrg real time -->
+
+            <?php
+            if (mysqli_num_rows($qryTrans) == 0) {
+                echo "<p class='text-muted'>You haven't made any transactions yet.</p>";
+            } else {
+                while ($data = mysqli_fetch_assoc($qryTrans)) {
+                    $warna = $data['jenis'] == 'pemasukan' ? " #1D9E75" : "#E24B4A";
+                    $tanda = $data['jenis'] == 'pemasukan' ? "+" : "-";
+
+                    $tanggalDb = $data['tanggal'];
+                    $today = date('Y-m-d');
+                    $yesterday = date('Y-m-d', strtotime('-1 day'));
+
+                    if ($tanggalDb == $today) {
+                        $labelTgl = 'Today';
+                    } else if ($tanggalDb == $yesterday) {
+                        $labelTgl = 'Yesterday';
+                    } else {
+                        $labelTgl = date('d M', strtotime($tanggalDb));
+                    }
+
+                    echo "
+                        <div style='display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px solid #eee;'>
+                            <div style='width:10px; height:10px; border-radius:50%; background:$warna; margin-top:4px; flex-shrink:0;'></div>
+                            <div style='flex:1;'>
+                                <div>{$data['keterangan']}</div>
+                                <div style='color: gray; font-size:12px;'>$labelTgl</div>
+                            </div>
+                            <div style='font-weight:500; color:$warna;'>$tanda Rp " . number_format($data['jumlah'], 0, ',', '.') . "</div>
+                        </div>
+                    ";
+                }
+
+            }
+            ?>
+
         </div>
 
     </div>
