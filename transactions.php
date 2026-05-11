@@ -17,7 +17,7 @@ if (isset($_POST['simpan'])) {
     $jenis = $_POST['jenis'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
-    $tanggal = date('Y-m-d');
+    $tanggal = $_POST['tanggal'];
     $categoriesID = (!empty($_POST['kategori'])) ? $_POST['kategori'] : NULL;
 
     $query = "INSERT INTO transactions (userID, jenis, categoriesID, jumlah, keterangan, tanggal) VALUES (?, ?, ?, ?, ?, ?)";
@@ -37,12 +37,13 @@ if (isset($_POST['update'])) {
     $jenis = $_POST['jenis'];
     $jumlah = $_POST['jumlah'];
     $keterangan = $_POST['keterangan'];
+    $tanggal = $_POST['tanggal'];
     $categoriesID = (!empty($_POST['kategori'])) ? $_POST['kategori'] : NULL;
 
-
-    $query = "UPDATE transactions SET jenis = ?, categoriesID = ?, jumlah = ?, keterangan = ? WHERE transactionID = ? AND userID = ?";
+    $query = "UPDATE transactions SET jenis = ?, categoriesID = ?, jumlah = ?, keterangan = ?, tanggal = ? WHERE transactionID = ? AND userID = ?";
     $stmt = mysqli_prepare($koneksi, $query);
-    mysqli_stmt_bind_param($stmt, "siisii", $jenis, $categoriesID, $jumlah, $keterangan, $transactionID, $userID);
+
+    mysqli_stmt_bind_param($stmt, "siissii", $jenis, $categoriesID, $jumlah, $keterangan, $tanggal, $transactionID, $userID);
 
     if (mysqli_stmt_execute($stmt)) {
         echo "<script>alert('Transaction succesfully updated!'); window.location.href='transactions.php';</script>";
@@ -56,7 +57,6 @@ if (isset($_POST['hapus'])) {
     $transactionID = $_POST['transactionID'];
 
     $query = "DELETE FROM transactions WHERE transactionID = ? AND userID = ?";
-    //prepare statementnyah
     $stmt = mysqli_prepare($koneksi, $query);
     mysqli_stmt_bind_param($stmt, "ii", $transactionID, $userID);
 
@@ -76,18 +76,13 @@ $queryTransaksi = "SELECT t.*, c.nama_kategori
                    LEFT JOIN categories c ON t.categoriesID = c.categoriesID 
                    WHERE t.userID = ? 
                    ORDER BY t.tanggal DESC";
-//prepare statement mysqli
 $stmtTransaksi = mysqli_prepare($koneksi, $queryTransaksi);
 mysqli_stmt_bind_param($stmtTransaksi, "i", $userID);
 mysqli_stmt_execute($stmtTransaksi);
 $resultTransaksi = mysqli_stmt_get_result($stmtTransaksi);
 
-
 $bulan_filter = isset($_GET['bulan']) ? $_GET['bulan'] : date('Y-m');
-$bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk melengkapi template sql 
-
-
-
+$bulan_sql = $bulan_filter . '-01'; 
 ?>
 
 <!DOCTYPE html>
@@ -101,10 +96,7 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style1.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
+        body { background-color: #f8f9fa; }
         .sidebar {
             min-height: 100vh;
             width: 250px;
@@ -112,13 +104,11 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
             border-right: 1px solid #dee2e6;
             position: fixed;
         }
-
         .main-content {
             margin-left: 250px;
             padding: 30px;
             width: calc(100% - 250px);
         }
-
         .nav-link {
             color: #6c757d !important;
             border-radius: 10px;
@@ -129,38 +119,28 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
             align-items: center;
             border: none !important;
         }
-
         .nav-link.active {
             background-color: #ecfdf5 !important;
             color: #059669 !important;
             font-weight: 600;
         }
-
         .nav-link:hover:not(.active):not(.text-danger) {
             background-color: #ecfdf5 !important;
             color: #059669 !important;
             transform: none !important;
         }
-
-        .nav-link.text-danger {
-            color: #dc2626 !important;
-        }
-
+        .nav-link.text-danger { color: #dc2626 !important; }
         .nav-link.text-danger:hover {
             background-color: #fef2f2 !important;
             color: #b91c1c !important;
             transform: none !important;
         }
-
-        .nav-link i {
-            font-size: 1.1rem;
-        }
+        .nav-link i { font-size: 1.1rem; }
     </style>
 </head>
 
 <body class="d-flex bg-light">
 
-    <!-- navbar -->
     <div class="sidebar d-flex flex-column shadow-sm">
         <div class="p-4 mb-2">
             <h4 class="text-success fw-bold"><i class="bi bi-wallet2 me-2"></i>Nyawit Track</h4>
@@ -203,15 +183,12 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
             </li>
         </ul>
     </div>
-    <!-- end navbar -->
-
     <div class="main-content">
         <header class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2 class="fw-bold mb-0">Transactions</h2>
                 <p class="text-muted">Track Your Money Transaction</p>
             </div>
-            <!-- MONTH -->
             <div class="d-flex gap-2 align-items-center">
                 <input type="month" class="form-control rounded-3" id="bulanFilter" value="<?= $bulan_filter ?>"
                     onchange="window.location='transactions.php?bulan='+this.value">
@@ -219,7 +196,6 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
                     <i class="bi bi-plus-lg me-1"></i> Add Transactions
                 </button>
             </div>
-
         </header>
 
         <div class="card border-0 shadow-sm rounded-4">
@@ -240,7 +216,8 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
                             <?php if (mysqli_num_rows($resultTransaksi) > 0): ?>
                                 <?php while ($row = mysqli_fetch_assoc($resultTransaksi)): ?>
                                     <tr>
-                                        <td><?= date('d M Y', strtotime($row['tanggal'])) ?></td>
+                                        <td><?= (!empty($row['tanggal']) && $row['tanggal'] != '0000-00-00') ? date('d M Y', strtotime($row['tanggal'])) : '-' ?></td>
+                                        
                                         <td>
                                             <?php if ($row['jenis'] == 'pemasukan'): ?>
                                                 <span class="badge bg-success bg-opacity-10 text-success">Income</span>
@@ -250,15 +227,14 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
                                         </td>
                                         <td><?= $row['nama_kategori'] ?? '-' ?></td>
                                         <td><?= htmlspecialchars($row['keterangan']) ?></td>
-                                        <td
-                                            class="fw-bold <?= $row['jenis'] == 'pemasukan' ? 'text-success' : 'text-danger' ?>">
+                                        <td class="fw-bold <?= $row['jenis'] == 'pemasukan' ? 'text-success' : 'text-danger' ?>">
                                             <?= $row['jenis'] == 'pemasukan' ? '+' : '-' ?> Rp
                                             <?= number_format($row['jumlah'], 0, ',', '.') ?>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-outline-warning" data-bs-toggle="modal"
                                                 data-bs-target="#editModal"
-                                                onclick="setEditData('<?= $row['transactionID'] ?>', '<?= $row['jenis'] ?>', '<?= $row['categoriesID'] ?>', '<?= $row['jumlah'] ?>', '<?= htmlspecialchars($row['keterangan'], ENT_QUOTES) ?>')">
+                                                onclick="setEditData('<?= $row['transactionID'] ?>', '<?= $row['tanggal'] ?>', '<?= $row['jenis'] ?>', '<?= $row['categoriesID'] ?>', '<?= $row['jumlah'] ?>', '<?= htmlspecialchars($row['keterangan'], ENT_QUOTES) ?>')">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
 
@@ -291,6 +267,10 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
                 </div>
                 <form action="" method="POST">
                     <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Date</label>
+                            <input type="date" class="form-control" name="tanggal" value="<?= date('Y-m-d') ?>" required>
+                        </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Transaction Type</label>
                             <select class="form-select" name="jenis" required>
@@ -338,6 +318,11 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
                 <form action="" method="POST">
                     <div class="modal-body">
                         <input type="hidden" id="edit_id" name="transactionID">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Date</label>
+                            <input type="date" class="form-control" id="edit_tanggal" name="tanggal" required>
+                        </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Transaction Type</label>
@@ -399,17 +384,18 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        function setEditData(id, jenis, kategori, jumlah, keterangan) {
-            document.getElementById('edit_id').value = id;
-            document.getElementById('edit_jenis').value = jenis;
-            document.getElementById('edit_kategori').value = kategori;
-            document.getElementById('edit_jumlah').value = jumlah;
-            document.getElementById('edit_keterangan').value = keterangan;
-        }
+    function setEditData(id, tanggal, jenis, kategori, jumlah, keterangan) {
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_tanggal').value = tanggal;
+        document.getElementById('edit_jenis').value = jenis;
+        document.getElementById('edit_kategori').value = kategori;
+        document.getElementById('edit_jumlah').value = jumlah;
+        document.getElementById('edit_keterangan').value = keterangan;
+    }
 
-        function setHapusData(id) {
-            document.getElementById('hapus_id').value = id;
-        }
+    function setHapusData(id) {
+        document.getElementById('hapus_id').value = id;
+    }
     </script>
 </body>
 
