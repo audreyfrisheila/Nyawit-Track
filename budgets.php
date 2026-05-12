@@ -9,6 +9,8 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     exit;
 }
 
+$userID = $_SESSION['userID'];
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $aksi = $_POST['aksi'];
 
@@ -16,19 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $categoriesID = $_POST['categoriesID'];
         $budget_limit = $_POST['budget_limit'];
         $bulan = $_POST['bulan'] . '-01';
-        mysqli_query($koneksi, "INSERT INTO budgets(categoriesID, budget_limit, bulan) VALUES ('$categoriesID', '$budget_limit', '$bulan')");
+        mysqli_query($koneksi, "INSERT INTO budgets(userID, categoriesID, budget_limit, bulan) VALUES ('$userID', '$categoriesID', '$budget_limit', '$bulan')");
     }
 
     if ($aksi == 'edit') {
         $budgetID = $_POST['budgetID'];
         $budget_limit = $_POST['budget_limit'];
         $bulan = $_POST['bulan'] . '-01';
-        mysqli_query($koneksi, "UPDATE budgets SET budget_limit = '$budget_limit', bulan = '$bulan' where budgetID = '$budgetID'");
+        mysqli_query($koneksi, "UPDATE budgets SET budget_limit = '$budget_limit', bulan = '$bulan' where budgetID = '$budgetID' and userID='$userID'");
     }
 
     if ($aksi == 'hapus') {
         $budgetID = $_POST['budgetID'];
-        mysqli_query($koneksi, "DELETE FROM budgets WHERE budgetID='$budgetID'");
+        mysqli_query($koneksi, "DELETE FROM budgets WHERE budgetID='$budgetID' and userID='$userID'");
     }
     header("Location: budgets.php");
     exit;
@@ -40,9 +42,9 @@ $bulan_sql = $bulan_filter . '-01'; // 01 disini berfungsi sbg dummy ajaa, utk m
 // nampilin daftar budget per kategori di bulan tertentu dan menghitung brp uang yg udh kepake
 // jadi, haislnya nanti akan kategori: makan, budget_limit: 150.000, spent: 100rb
 $data = mysqli_query($koneksi, "SELECT b.budgetID, c.nama_kategori, c.categoriesID, 
-b.budget_limit, b.bulan, COALESCE((SELECT SUM(t.jumlah) FROM transactions t WHERE t.categoriesID = b.categoriesID 
+b.budget_limit, b.bulan, COALESCE((SELECT SUM(t.jumlah) FROM transactions t WHERE t.categoriesID = b.categoriesID AND t.userID='$userID'
 AND DATE_FORMAT(t.tanggal, '%Y-%m') = '$bulan_filter' AND t.jenis = 'pengeluaran'), 0) AS spent FROM budgets b JOIN categories c on 
-b.categoriesID = c.categoriesID where DATE_FORMAT(b.bulan, '%Y-%m')='$bulan_filter' ORDER BY b.budgetID ASC");
+b.categoriesID = c.categoriesID where b.userID = '$userID' AND DATE_FORMAT(b.bulan, '%Y-%m')='$bulan_filter' ORDER BY b.budgetID ASC");
 
 $categories = mysqli_query($koneksi, "SELECT * FROM categories ORDER BY nama_kategori ASC");
 
