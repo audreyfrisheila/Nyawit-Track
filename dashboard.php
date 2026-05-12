@@ -6,18 +6,37 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
     echo "<script> alert('Please log in first!'); 
             location.href = 'login.php';
         </script>";
+    exit;
 }
 
-$sisaSaldo = mysqli_query($koneksi, "SELECT SUM(CASE WHEN jenis='pemasukan' THEN jumlah ELSE 0 END)- SUM(CASE WHEN jenis='pengeluaran' THEN jumlah ELSE 0 END) as balance FROM transactions WHERE userID = {$_SESSION['userID']}");
-$dataSaldo = mysqli_fetch_assoc($sisaSaldo)['balance'] ?? 0;
+$userID = $_SESSION['userID'];
 
-$sisaSaldo2 = mysqli_query($koneksi, "SELECT SUM(jumlah) AS monthly FROM transactions WHERE jenis='pengeluaran' AND MONTH(tanggal) = MONTH(NOW()) AND YEAR(tanggal) = YEAR(NOW()) AND userID = {$_SESSION['userID']}");
-$monthly = mysqli_fetch_assoc($sisaSaldo2)['monthly'] ?? 0;
+// total balance
+$stmt = mysqli_prepare($koneksi, "SELECT SUM(CASE WHEN jenis='pemasukan' THEN jumlah ELSE 0 END) - SUM(CASE WHEN jenis='pengeluaran' THEN jumlah ELSE 0 END) AS balance from transactions WHERE userID=?");
+mysqli_stmt_bind_param($stmt, "i", $userID);
+mysqli_stmt_execute($stmt);
 
+$result = mysqli_stmt_get_result($stmt);
+$dataSaldo = mysqli_fetch_assoc($result)['balance'] ?? 0;
+mysqli_stmt_close($stmt);
 
-// ambil data dari transactions
-$qryTrans = mysqli_query($koneksi, "SELECT * FROM transactions where userID = {$_SESSION['userID']} order by tanggal DESC limit 10");
+// monthly expenses
+$stmt = mysqli_prepare($koneksi, "SELECT SUM(jumlah) as monthly from transactions WHERE jenis='pengeluaran' AND MONTH(tanggal) = MONTH(NOW()) AND YEAR(tanggal) = YEAR(NOW()) AND userID = ?");
+mysqli_stmt_bind_param($stmt, "i", $userID);
+mysqli_stmt_execute($stmt);
 
+$result = mysqli_stmt_get_result($stmt);
+$monthly = mysqli_fetch_assoc($result)['monthly'] ?? 0;
+
+mysqli_stmt_close($stmt);
+
+// recent activities
+$stmt = mysqli_prepare($koneksi, "SELECT * FROM transactions WHERE userID=? ORDER BY tanggal desc LIMIT 10");
+mysqli_stmt_bind_param($stmt, "i", $userID);
+mysqli_stmt_execute($stmt);
+
+$qryTrans = mysqli_stmt_get_result($stmt);
+mysqli_stmt_close($stmt);
 ?>
 
 <!DOCTYPE html>
@@ -141,7 +160,7 @@ $qryTrans = mysqli_query($koneksi, "SELECT * FROM transactions where userID = {$
                 <h2 class="fw-bold mb-0">Welcome Back, <?php echo strtoupper($_SESSION['user']); ?>!</h2>
                 <p class="text-muted">What's happening with Your money today?</p>
             </div>
-            <span class="badge g-light text-dark border p-2 px-3 shadow-sm rounded-pill">
+            <span class="badge bg-light text-dark border p-2 px-3 shadow-sm rounded-pill">
                 <i class="bi bi-calendar3 me-2"></i><?php echo date('d M, Y'); ?>
             </span>
         </header>
