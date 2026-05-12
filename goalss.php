@@ -17,13 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $nama = $_POST['nama_goal'];
         $target = $_POST['target_nominal'];
         $deadline = $_POST['deadline'];
+        
         if ($deadline == "") {
-            $deadline_val = "NULL";
+            $stmt = mysqli_prepare($koneksi, 'INSERT INTO goals(userID, nama_goal, target_nominal, deadline, terkumpul) VALUES (?,?,?, NULL, 0)');
+            mysqli_stmt_bind_param($stmt, "isi", $userID, $nama, $target);
         } else {
-            $deadline_val = "'$deadline'";
+            $stmt = mysqli_prepare($koneksi, "INSERT INTO goals(userID, nama_goal, target_nominal, deadline, terkumpul) VALUES (?, ?, ?, ?, 0)");
+            mysqli_stmt_bind_param($stmt, "isis", $userID, $nama, $target, $deadline);
         }
-
-        mysqli_query($koneksi, "INSERT INTO goals(userID, nama_goal, target_nominal, deadline, terkumpul) VALUES ('$userID', '$nama', '$target', $deadline_val, 0)");
+        mysqli_stmt_execute($stmt);
     }
 
     if ($aksi == 'edit') {
@@ -31,18 +33,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $nama = $_POST['nama_goal'];
         $target = $_POST['target_nominal'];
         $deadline = $_POST['deadline'];
-        if ($deadline == "") {
-            $deadline_val = "NULL";
-        } else {
-            $deadline_val = "'$deadline'";
-        }
 
-        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target', deadline=$deadline_val WHERE goalsID = '$id' and userID='$userID'");
+        if ($deadline == "") {
+            $stmt = mysqli_prepare($koneksi, 
+            "UPDATE goals 
+             SET nama_goal=?, target_nominal=?, deadline=NULL 
+             WHERE goalsID=? AND userID=?");
+
+            mysqli_stmt_bind_param($stmt, "siii", $nama, $target, $id, $userID);
+        } else {
+            $stmt = mysqli_prepare($koneksi, 
+            "UPDATE goals SET nama_goal=?, target_nominal=?, deadline=? WHERE goalsID=? AND userID=?");
+            mysqli_stmt_bind_param($stmt, "sisii", $nama, $target, $deadline, $id, $userID);
+        }
+        mysqli_stmt_execute($stmt);     
     }
 
     if ($aksi == 'hapus') {
         $id = $_POST['goalsID'];
-        mysqli_query($koneksi, "DELETE FROM goals where goalsID = '$id' and userID='$userID'");
+        $stmt = mysqli_prepare($koneksi, "DELETE FROM goals WHERE goalsID=? AND userID=?");
+
+        mysqli_stmt_bind_param($stmt, "ii", $id, $userID);
+
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
     }
 
     if ($aksi == 'topup') {
@@ -54,29 +68,48 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
 
-        $goal = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT target_nominal, terkumpul from goals where goalsID = '$id' and userID='$userID'"));
+        // ambil data goal
+        $stmt = mysqli_prepare($koneksi, "SELECT target_nominal, terkumpul from goals WHERE goalsID=? AND userID=?");
+        mysqli_stmt_bind_param($stmt, "ii", $id, $userID);
+        
+        mysqli_stmt_execute($stmt);
+
+        $result = mysqli_stmt_get_result($stmt);
+        $goal = mysqli_fetch_assoc($result);
+        mysqli_stmt_close($stmt);
+
+        // kalau goal tdk ditemukan
         if(!$goal){
             header("Location: goalss.php");
             exit;
         }
-        $sisa = $goal['target_nominal']-$goal['terkumpul'];
 
+        $sisa = $goal['target_nominal']-$goal['terkumpul'];
         // ketika topup melebihi sisa
         if($jumlah>$sisa){
             header("Location: goalss.php?error=melebihi");
             exit;
         }
-        mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + $jumlah WHERE goalsID = '$id' and userID='$userID'");
 
+        // update topup
+         $stmt = mysqli_prepare($koneksi, "UPDATE goals SET terkumpul = terkumpul + ? WHERE goalsID=? AND userID=?");
+
+        mysqli_stmt_bind_param($stmt, "iii", $jumlah, $id, $userID);
+
+        mysqli_stmt_execute($stmt);
+
+        mysqli_stmt_close($stmt);
     }
 
     header("Location: goalss.php");
     exit;
 }
-
 // tes branch
 // ambil data dari database
-$data = mysqli_query($koneksi, "SELECT * FROM goals where userID='$userID'");
+$stmt = mysqli_prepare($koneksi, "SELECT * FROM goals WHERE userID=?");
+mysqli_stmt_bind_param($stmt, "i", $userId);
+mysqli_stmt_execute($stmt);
+$data = mysqli_stmt_get_result($stmt);
 
 function formatRp($angka)
 {
