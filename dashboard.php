@@ -204,7 +204,6 @@ $qryTrans = mysqli_query($koneksi, "SELECT * FROM transactions where userID = {$
                         </div>
                     ";
                 }
-
             }
             ?>
 
