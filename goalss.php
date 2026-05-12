@@ -8,7 +8,7 @@ if (!isset($_SESSION["status"]) || $_SESSION['status'] !== 'login') {
         </script>";
     exit;
 }
-
+$userID = $_SESSION['userID'];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $aksi = $_POST['aksi'];
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $deadline_val = "'$deadline'";
         }
 
-        mysqli_query($koneksi, "INSERT INTO goals(nama_goal, target_nominal, deadline, terkumpul) VALUES ('$nama', '$target', $deadline_val, 0)");
+        mysqli_query($koneksi, "INSERT INTO goals(userID, nama_goal, target_nominal, deadline, terkumpul) VALUES ('$userID', '$nama', '$target', $deadline_val, 0)");
     }
 
     if ($aksi == 'edit') {
@@ -37,12 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $deadline_val = "'$deadline'";
         }
 
-        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target', deadline=$deadline_val WHERE goalsID = '$id'");
+        mysqli_query($koneksi, "UPDATE goals SET nama_goal='$nama', target_nominal='$target', deadline=$deadline_val WHERE goalsID = '$id' and userID='$userID'");
     }
 
     if ($aksi == 'hapus') {
         $id = $_POST['goalsID'];
-        mysqli_query($koneksi, "DELETE FROM goals where goalsID = '$id'");
+        mysqli_query($koneksi, "DELETE FROM goals where goalsID = '$id' and userID='$userID'");
     }
 
     if ($aksi == 'topup') {
@@ -54,7 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit;
         }
 
-        $goal = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT target_nominal, terkumpul from goals where goalsID = '$id'"));
+        $goal = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT target_nominal, terkumpul from goals where goalsID = '$id' and userID='$userID'"));
+        if(!$goal){
+            header("Location: goalss.php");
+            exit;
+        }
         $sisa = $goal['target_nominal']-$goal['terkumpul'];
 
         // ketika topup melebihi sisa
@@ -62,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             header("Location: goalss.php?error=melebihi");
             exit;
         }
-        mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + $jumlah WHERE goalsID = '$id'");
+        mysqli_query($koneksi, "UPDATE goals set terkumpul = terkumpul + $jumlah WHERE goalsID = '$id' and userID='$userID'");
 
     }
 
@@ -72,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 // tes branch
 // ambil data dari database
-$data = mysqli_query($koneksi, "SELECT * FROM goals");
+$data = mysqli_query($koneksi, "SELECT * FROM goals where userID='$userID'");
 
 function formatRp($angka)
 {
